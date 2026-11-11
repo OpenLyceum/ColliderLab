@@ -1,21 +1,94 @@
 {
-  "title": "SceneryStack Template",
+  "title": "Collider Lab",
   "screens": {
-    "sim": "Sim"
+    "eventDisplay": "Event Display",
+    "bumpHunt": "Bump Hunt",
+    "energyFrontier": "Energy Frontier"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "The play area shows the main simulation content.",
-      "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-      "interactionHint": "Explore the simulation by interacting with its controls."
+    "eventDisplay": {
+      "screenSummary": {
+        "playArea": "The play area shows the main simulation content.",
+        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
+        "interactionHint": "Explore the simulation by interacting with its controls."
+      },
+      "currentDetails": "The simulation is in its initial state.",
+      "controls": {
+        "exampleControl": "Example control"
+      }
     },
-    "currentDetails": "The simulation is in its initial state.",
-    "controls": {
-      "exampleControl": "Example control"
+    "bumpHunt": {
+      "screenSummary": {
+        "playArea": "The play area shows a histogram of the invariant mass of muon pairs recorded by the CMS detector in 2011. Peaks mark particles that decayed into two muons.",
+        "controlArea": "Controls choose how the histogram is filled, one pair at a time, as a stream, or all at once, and switch between the full spectrum and the Z region. A fit panel measures the Z boson's mass, width and lifetime.",
+        "interactionHint": "Add a few pairs by hand, then stream events and watch the peaks appear."
+      },
+      "currentDetailsPattern": "The histogram holds {{count}} events.",
+      "controls": {
+        "fillMode": "Fill mode",
+        "viewRange": "Mass range",
+        "streamPlayPause": "Stream events",
+        "streamRate": "Stream rate",
+        "resolution": "Detector resolution",
+        "fit": "Fit the Z peak",
+        "add": "Add this pair to the histogram",
+        "next": "Show the next event",
+        "clear": "Clear the histogram",
+        "labels": "Label resonances"
+      }
+    },
+    "energyFrontier": {
+      "screenSummary": {
+        "playArea": "The play area shows the main simulation content.",
+        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
+        "interactionHint": "Explore the simulation by interacting with its controls."
+      },
+      "currentDetails": "The simulation is in its initial state.",
+      "controls": {
+        "exampleControl": "Example control"
+      }
     }
   },
   "preferences": {
     "title": "Simulation",
     "exampleToggle": "Example Toggle"
+  },
+  "bumpHunt": {
+    "fillModeTitle": "Fill the histogram",
+    "modePair": "One pair at a time",
+    "modeStream": "Stream events",
+    "modeFull": "All 100 000 events",
+    "viewTitle": "Mass range",
+    "viewFull": "Full spectrum (log–log)",
+    "viewZ": "Z region (linear)",
+    "showLabels": "Label resonances",
+    "muon1": "Muon 1",
+    "muon2": "Muon 2",
+    "sum": "Sum",
+    "energy": "E",
+    "charge": "q",
+    "massSquaredPattern": "m² = (E₁+E₂)² − |p₁+p₂|² = {{value}} GeV²/c⁴",
+    "massPattern": "m = {{value}} GeV/c²",
+    "addToHistogram": "Add to histogram",
+    "nextEvent": "Next event",
+    "streamRate": "Rate",
+    "eventsPerSecondPattern": "{{value}} events/s",
+    "filledPattern": "Events in histogram: {{count}}",
+    "fullPattern": "CMS 2011, {{count}} dimuon events",
+    "loading": "Loading CMS events…",
+    "loadFailed": "Could not load the event file.",
+    "clear": "Clear",
+    "fitTitle": "Fit the Z",
+    "resolution": "Detector resolution σ",
+    "fitZ": "Fit Z",
+    "fitMassPattern": "m_Z = {{value}} ± {{error}} GeV/c²",
+    "fitWidthPattern": "Γ = {{value}} ± {{error}} GeV",
+    "fitLifetimePattern": "τ = ħ/Γ = {{value}} × 10⁻²⁵ s",
+    "fitPdgPattern": "PDG: m_Z = {{mass}} GeV/c², Γ = {{width}} GeV",
+    "fitTooFew": "Too few events near 91 GeV.",
+    "xAxis": "Dimuon invariant mass (GeV/c²)",
+    "yAxis": "Events per bin",
+    "credit": "Data: CMS collaboration, CERN Open Data (CC0)",
+    "gevUnit": "GeV"
   }
 }

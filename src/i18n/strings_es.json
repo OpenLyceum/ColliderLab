@@ -1,21 +1,94 @@
 {
-  "title": "Plantilla de Simulación",
+  "title": "Collider Lab",
   "screens": {
-    "sim": "Simulación"
+    "eventDisplay": "Event Display",
+    "bumpHunt": "Bump Hunt",
+    "energyFrontier": "Energy Frontier"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "El área de juego muestra el contenido principal de la simulación.",
-      "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-      "interactionHint": "Explora la simulación interactuando con sus controles."
+    "eventDisplay": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
     },
-    "currentDetails": "La simulación está en su estado inicial.",
-    "controls": {
-      "exampleControl": "Control de ejemplo"
+    "bumpHunt": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra un histograma de la masa invariante de pares de muones registrados por el detector CMS en 2011. Los picos señalan partículas que se desintegraron en dos muones.",
+        "controlArea": "Los controles eligen cómo llenar el histograma, un par a la vez, como flujo o todo de una vez, y cambian entre el espectro completo y la región del Z. Un panel de ajuste mide la masa, la anchura y la vida media del bosón Z.",
+        "interactionHint": "Añada algunos pares a mano, luego active el flujo y observe cómo aparecen los picos."
+      },
+      "currentDetailsPattern": "El histograma contiene {{count}} eventos.",
+      "controls": {
+        "fillMode": "Modo de llenado",
+        "viewRange": "Rango de masa",
+        "streamPlayPause": "Flujo de eventos",
+        "streamRate": "Ritmo del flujo",
+        "resolution": "Resolución del detector",
+        "fit": "Ajustar el pico del Z",
+        "add": "Añadir este par al histograma",
+        "next": "Mostrar el evento siguiente",
+        "clear": "Borrar el histograma",
+        "labels": "Etiquetar resonancias"
+      }
+    },
+    "energyFrontier": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra el contenido principal de la simulación.",
+        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
+        "interactionHint": "Explora la simulación interactuando con sus controles."
+      },
+      "currentDetails": "La simulación está en su estado inicial.",
+      "controls": {
+        "exampleControl": "Control de ejemplo"
+      }
     }
   },
   "preferences": {
     "title": "Simulación",
     "exampleToggle": "Ejemplo de alternancia"
+  },
+  "bumpHunt": {
+    "fillModeTitle": "Llenar el histograma",
+    "modePair": "Un par a la vez",
+    "modeStream": "Flujo de eventos",
+    "modeFull": "Los 100 000 eventos",
+    "viewTitle": "Rango de masa",
+    "viewFull": "Espectro completo (log–log)",
+    "viewZ": "Región del Z (lineal)",
+    "showLabels": "Etiquetar resonancias",
+    "muon1": "Muon 1",
+    "muon2": "Muon 2",
+    "sum": "Suma",
+    "energy": "E",
+    "charge": "q",
+    "massSquaredPattern": "m² = (E₁+E₂)² − |p₁+p₂|² = {{value}} GeV²/c⁴",
+    "massPattern": "m = {{value}} GeV/c²",
+    "addToHistogram": "Añadir al histograma",
+    "nextEvent": "Evento siguiente",
+    "streamRate": "Ritmo",
+    "eventsPerSecondPattern": "{{value}} eventos/s",
+    "filledPattern": "Eventos en el histograma: {{count}}",
+    "fullPattern": "CMS 2011, {{count}} eventos con dos muones",
+    "loading": "Cargando eventos de CMS…",
+    "loadFailed": "No se pudo cargar el archivo de eventos.",
+    "clear": "Borrar",
+    "fitTitle": "Ajustar el Z",
+    "resolution": "Resolución del detector σ",
+    "fitZ": "Ajustar Z",
+    "fitMassPattern": "m_Z = {{value}} ± {{error}} GeV/c²",
+    "fitWidthPattern": "Γ = {{value}} ± {{error}} GeV",
+    "fitLifetimePattern": "τ = ħ/Γ = {{value}} × 10⁻²⁵ s",
+    "fitPdgPattern": "PDG: m_Z = {{mass}} GeV/c², Γ = {{width}} GeV",
+    "fitTooFew": "Muy pocos eventos cerca de 91 GeV.",
+    "xAxis": "Masa invariante de los dos muones (GeV/c²)",
+    "yAxis": "Eventos por intervalo",
+    "credit": "Datos: colaboración CMS, CERN Open Data (CC0)",
+    "gevUnit": "GeV"
   }
 }

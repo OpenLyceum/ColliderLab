@@ -40,3 +40,6 @@ Thumbs.db
 
 # CI / local npm audit artifact (must not be linted)
 audit.json
+
+# Raw CERN Open Data downloads (scripts/cms/fetch_dimuons.py)
+cache/

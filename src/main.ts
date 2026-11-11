@@ -21,24 +21,35 @@ import "./brand.js";
 
 import { onReadyToLaunch, PreferencesModel, Sim } from "scenerystack/sim";
 import { Tandem } from "scenerystack/tandem";
+import { BumpHuntScreen } from "./bump-hunt/BumpHuntScreen.js";
+import ColliderLabColors from "./ColliderLabColors.js";
+import { EnergyFrontierScreen } from "./energy-frontier/EnergyFrontierScreen.js";
+import { EventDisplayScreen } from "./event-display/EventDisplayScreen.js";
 import { StringManager } from "./i18n/StringManager.js";
-import { SimPreferencesModel } from "./preferences/SimPreferencesModel.js";
-import { SimPreferencesNode } from "./preferences/SimPreferencesNode.js";
-import SimColors from "./SimColors.js";
-import { SimScreen } from "./sim-screen/SimScreen.js";
+import { ColliderLabPreferencesModel } from "./preferences/ColliderLabPreferencesModel.js";
+import { ColliderLabPreferencesNode } from "./preferences/ColliderLabPreferencesNode.js";
 
 onReadyToLaunch(() => {
   const stringManager = StringManager.getInstance();
 
-  // Simulation-specific preferences; initial values come from simQueryParameters.
-  const simPreferences = new SimPreferencesModel(Tandem.ROOT.createTandem("preferences"));
+  // Simulation-specific preferences; initial values come from colliderLabQueryParameters.
+  const simPreferences = new ColliderLabPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
   const screens = [
-    new SimScreen({
-      // The screen name Property updates automatically when the locale changes
-      name: stringManager.getScreenNames().simStringProperty,
-      tandem: Tandem.ROOT.createTandem("simScreen"),
-      backgroundColorProperty: SimColors.backgroundColorProperty,
+    new EventDisplayScreen({
+      name: stringManager.getScreenNames().eventDisplayStringProperty,
+      tandem: Tandem.ROOT.createTandem("eventDisplayScreen"),
+      backgroundColorProperty: ColliderLabColors.backgroundColorProperty,
+    }),
+    new BumpHuntScreen({
+      name: stringManager.getScreenNames().bumpHuntStringProperty,
+      tandem: Tandem.ROOT.createTandem("bumpHuntScreen"),
+      backgroundColorProperty: ColliderLabColors.backgroundColorProperty,
+    }),
+    new EnergyFrontierScreen({
+      name: stringManager.getScreenNames().energyFrontierStringProperty,
+      tandem: Tandem.ROOT.createTandem("energyFrontierScreen"),
+      backgroundColorProperty: ColliderLabColors.backgroundColorProperty,
     }),
   ];
 
@@ -53,7 +64,7 @@ onReadyToLaunch(() => {
       simulationOptions: {
         customPreferences: [
           {
-            createContent: (tandem: Tandem) => new SimPreferencesNode(simPreferences, tandem),
+            createContent: (tandem: Tandem) => new ColliderLabPreferencesNode(simPreferences, tandem),
           },
         ],
       },
