@@ -18,6 +18,7 @@
 import { BooleanProperty, Emitter, NumberProperty, Property, StringUnionProperty } from "scenerystack/axon";
 import { Range } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { SeededRandom } from "../../common/model/random.js";
 import { type DimuonDataset, type DimuonEvent, loadDimuonDataset } from "./DimuonDataset.js";
 import { emptyLogHistogram, emptyZHistogram, fullSpectrum, zRegionSpectrum } from "./dimuonSpectrum.js";
 import type { MassHistogram } from "./MassHistogram.js";
@@ -230,25 +231,7 @@ export class BumpHuntModel implements TModel {
   }
 }
 
-/** Deterministic Fisher–Yates shuffle (mulberry32). */
+/** Deterministic shuffle of the event order. */
 export function shuffledOrder(size: number, seed: number): Uint32Array {
-  const order = new Uint32Array(size);
-  for (let i = 0; i < size; i++) {
-    order[i] = i;
-  }
-  let state = seed >>> 0;
-  const random = (): number => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  for (let i = size - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    const tmp = order[i] ?? 0;
-    order[i] = order[j] ?? 0;
-    order[j] = tmp;
-  }
-  return order;
+  return new SeededRandom(seed).permutation(size);
 }

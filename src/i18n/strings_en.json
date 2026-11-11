@@ -8,13 +8,20 @@
   "a11y": {
     "eventDisplay": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "The play area shows a particle detector seen along the beam: the tracker at the centre, then the electromagnetic and hadronic calorimeters, the solenoid, and the muon chambers. A collision event shows curved tracks, calorimeter deposits, muon hits and a missing-momentum arrow.",
+        "controlArea": "Choose Explore or the What was this? game, pick a collision type, make new events, change the magnetic field, and measure a selected track's curvature.",
+        "interactionHint": "Select a track to read its radius and momentum, then switch the field down and watch the tracks curl."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Event with {{tracks}} tracks and {{deposits}} calorimeter deposits; missing transverse momentum {{missing}} GeV.",
       "controls": {
-        "exampleControl": "Example control"
+        "mode": "Mode",
+        "process": "Collision type",
+        "newEvent": "Generate a new event",
+        "bField": "Magnetic field",
+        "nextTrack": "Select the next track",
+        "bank": "Add this decay to the lifetime estimate",
+        "guessPattern": "Guess {{process}}",
+        "nextRound": "Next event"
       }
     },
     "bumpHunt": {
@@ -39,13 +46,14 @@
     },
     "energyFrontier": {
       "screenSummary": {
-        "playArea": "The play area shows the main simulation content.",
-        "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-        "interactionHint": "Explore the simulation by interacting with its controls."
+        "playArea": "A log–log graph of the collision energy √s against beam energy, for a fixed target and for a collider, with production thresholds and historic machines marked.",
+        "controlArea": "Choose proton or electron beams and set the beam energy. Readouts compare the two configurations and list what each can make.",
+        "interactionHint": "Slide the beam energy up and compare how fast the two curves rise."
       },
-      "currentDetails": "The simulation is in its initial state.",
+      "currentDetailsPattern": "Beam energy {{energy}} GeV: fixed target gives {{fixed}} GeV, a collider gives {{collider}} GeV.",
       "controls": {
-        "exampleControl": "Example control"
+        "beam": "Beam particle",
+        "energy": "Beam energy, logarithmic"
       }
     }
   },
@@ -90,5 +98,75 @@
     "yAxis": "Events per bin",
     "credit": "Data: CMS collaboration, CERN Open Data (CC0)",
     "gevUnit": "GeV"
+  },
+  "eventDisplay": {
+    "modeTitle": "Mode",
+    "explore": "Explore",
+    "game": "What was this?",
+    "processTitle": "Collision",
+    "zToMuMu": "Z → μ⁺μ⁻",
+    "wToENu": "W → e ν",
+    "pi0ToGammaGamma": "π⁰ → γγ",
+    "kShortToPiPi": "K⁰<sub>S</sub> → π⁺π⁻",
+    "newEvent": "New event",
+    "bField": "Magnetic field B",
+    "showMissingPt": "Missing-pT arrow",
+    "showTruth": "Name the particles",
+    "zoomTracker": "Zoom on tracker",
+    "trackTitle": "Selected track",
+    "noTrack": "Click a track (or use Next track) to measure it.",
+    "nextTrack": "Next track",
+    "hitsPattern": "{{count}} hits",
+    "fitPattern": "Circle fit: r = {{radius}} m → pT = {{pt}} GeV/c",
+    "sagittaPattern": "Sagitta: L = {{chord}} m, s = {{sagitta}} mm → pT = {{pt}} GeV/c",
+    "truePattern": "True pT = {{pt}} GeV/c",
+    "formula": "pT [GeV/c] = 0.3 · B [T] · r [m]",
+    "kShortTitle": "K⁰<sub>S</sub> decay",
+    "flightPattern": "Flight distance L<sub>T</sub> = {{value}} cm",
+    "kaonPtPattern": "Kaon pT = {{value}} GeV/c → γβ = {{gb}}",
+    "properTimePattern": "Proper time t = L<sub>T</sub> / (γβ c) = {{value}} × 10⁻¹⁰ s",
+    "bank": "Add to lifetime estimate",
+    "lifetimePattern": "{{count}} decays: τ ≈ {{value}} × 10⁻¹⁰ s",
+    "kShortNote": "Decays within 3 cm of the beam can’t be told apart, so short times are missing and the average runs a little long.",
+    "missingPtPattern": "missing pT = {{value}} GeV/c",
+    "legendTitle": "Signatures",
+    "legendElectron": "e: track + ECAL",
+    "legendPhoton": "γ: ECAL only",
+    "legendMuon": "μ: through everything",
+    "legendHadron": "hadron: HCAL",
+    "legendNeutrino": "ν: nothing",
+    "gamePrompt": "Which process made this event?",
+    "right": "Right!",
+    "wrongPattern": "Not quite: it was {{answer}}.",
+    "scorePattern": "Score: {{score}} / {{rounds}}",
+    "nextRound": "Next event",
+    "tracker": "tracker",
+    "ecal": "ECAL",
+    "hcal": "HCAL",
+    "solenoid": "solenoid",
+    "muonChambers": "muon chambers"
+  },
+  "energyFrontier": {
+    "beamTitle": "Beams",
+    "proton": "Protons",
+    "electron": "Electrons",
+    "beamEnergy": "Beam energy",
+    "beamEnergyPattern": "E = {{value}} GeV",
+    "fixedPattern": "Fixed target: √s = {{value}} GeV",
+    "colliderPattern": "Collider (two beams): √s = {{value}} GeV",
+    "equivalentPattern": "A fixed-target beam would need {{value}} GeV to match this collider.",
+    "xAxis": "Beam energy (GeV)",
+    "yAxis": "√s (GeV)",
+    "fixedCurve": "fixed target",
+    "colliderCurve": "collider",
+    "reachTitle": "Enough √s to make…",
+    "partonNote": "In proton collisions the quarks and gluons share the energy, so real reach is below √s.",
+    "antiproton": "antiproton",
+    "jpsi": "J/ψ",
+    "upsilon": "Υ",
+    "z": "Z",
+    "wPair": "W⁺W⁻",
+    "higgs": "Higgs",
+    "topPair": "top pair"
   }
 }

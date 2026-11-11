@@ -1,160 +1,197 @@
 /**
  * EventDisplayScreenView.ts
  *
- * The top-level view for the simulation screen.
- *
- * All visual nodes are added here. Follow these conventions:
- *   - Use this.layoutBounds for positioning (never magic pixel values)
- *   - Keep a ResetAllButton that calls model.reset() and this.reset()
- *   - Override step(dt) for frame-by-frame animation
- *
- * ── Adding content ────────────────────────────────────────────────────────────
- * 1. Create Node subclasses in separate files (e.g. ColliderLabControlPanel.ts)
- * 2. Instantiate them here and call this.addChild(...)
- * 3. Link them to model properties:
- *      model.isRunningProperty.link( isRunning => { ... } );
- *
- * ── Layout bounds ─────────────────────────────────────────────────────────────
- * SceneryStack uses a virtual 1024×618 coordinate space by default.
- * this.layoutBounds gives you the full rectangle; use it for alignment:
- *   center, minX, maxX, minY, maxY, width, height
+ * Detector on the left; controls, measurements and the game on the right.
  */
 
+import { BooleanProperty } from "scenerystack/axon";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
-import { Node, Rectangle, Text } from "scenerystack/scenery";
-import { ResetAllButton } from "scenerystack/scenery-phet";
+import { HBox, Node, RichText, Text, VBox } from "scenerystack/scenery";
+import { NumberControl, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
+import { AquaRadioButtonGroup, Checkbox, RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../ColliderLabConstants.js";
-import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/ColliderLabButtonOptions.js";
+import {
+  FLAT_PANEL_PUSH_BUTTON_OPTIONS,
+  FLAT_RESET_ALL_BUTTON_OPTIONS,
+  LIGHT_SURFACE_TEXT_FILL,
+} from "../../common/ColliderLabButtonOptions.js";
+import {
+  COLLIDER_LAB_CHECKBOX_OPTIONS,
+  COLLIDER_LAB_NUMBER_CONTROL_OPTIONS,
+} from "../../common/ColliderLabControlOptions.js";
+import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import type { EventDisplayModel } from "../model/EventDisplayModel.js";
+import { B_FIELD_RANGE, type EventDisplayModel } from "../model/EventDisplayModel.js";
+import { PROCESSES } from "../model/EventGenerator.js";
+import { DetectorNode } from "./DetectorNode.js";
 import { EventDisplayScreenSummaryContent } from "./EventDisplayScreenSummaryContent.js";
+import { GamePanel } from "./GamePanel.js";
+import { MeasurementPanel } from "./MeasurementPanel.js";
+import { processLabel } from "./processLabel.js";
+
+const DETECTOR_PIXELS = 285;
+const RIGHT_WIDTH = 390;
+const FONT = "13px sans-serif";
 
 export type EventDisplayScreenViewOptions = ScreenViewOptions;
 
 export class EventDisplayScreenView extends ScreenView {
+  private readonly zoomProperty = new BooleanProperty(false);
+
   public constructor(model: EventDisplayModel, providedOptions?: EventDisplayScreenViewOptions) {
-    // ── Accessibility: screen summary ───────────────────────────────────────────
-    // The screen summary is the first thing a screen-reader user encounters. It
-    // is registered here, in the ScreenView's super() options, so every sim wires
-    // it the same way. See EventDisplayScreenSummaryContent for the four content regions.
     const options = optionize<EventDisplayScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
-      {
-        screenSummaryContent: new EventDisplayScreenSummaryContent(model),
-      },
+      { screenSummaryContent: new EventDisplayScreenSummaryContent(model) },
       providedOptions,
     );
     super(options);
+    const strings = StringManager.getInstance().getEventDisplayStrings();
+    const a11y = StringManager.getInstance().getEventDisplayA11yStrings();
+    const label = (s: typeof strings.exploreStringProperty, bold = false) =>
+      new RichText(s, { font: bold ? `bold ${FONT}` : FONT, fill: ColliderLabColors.textColorProperty, maxWidth: 170 });
 
-    // ── Background ────────────────────────────────────────────────────────────
-    // A full-screen rectangle that follows the active color profile.
-    // Replace or remove once you add real content.
-    const backgroundRect = new Rectangle(0, 0, this.layoutBounds.width, this.layoutBounds.height, {
-      fill: ColliderLabColors.backgroundColorProperty,
+    const detector = new DetectorNode(model, this.zoomProperty, DETECTOR_PIXELS);
+    detector.x = this.layoutBounds.minX + SCREEN_VIEW_MARGIN + DETECTOR_PIXELS;
+    detector.y = this.layoutBounds.centerY;
+
+    // Legend of signatures, bottom-left.
+    const legend = new VBox({
+      spacing: 1,
+      align: "left",
+      children: [
+        strings.legendTitleStringProperty,
+        strings.legendElectronStringProperty,
+        strings.legendPhotonStringProperty,
+        strings.legendMuonStringProperty,
+        strings.legendHadronStringProperty,
+        strings.legendNeutrinoStringProperty,
+      ].map(
+        (s, i) =>
+          new Text(s, {
+            font: i === 0 ? "bold 11px sans-serif" : "11px sans-serif",
+            fill: ColliderLabColors.textColorProperty,
+            opacity: 0.85,
+          }),
+      ),
+      left: this.layoutBounds.minX + 6,
+      bottom: this.layoutBounds.maxY - 6,
     });
-    this.addChild(backgroundRect);
 
-    // ── Placeholder label ─────────────────────────────────────────────────────
-    // Replace this with your actual simulation content.
-    const placeholderText = new Text(StringManager.getInstance().getScreenNames().eventDisplayStringProperty, {
-      font: "bold 36px sans-serif",
-      fill: ColliderLabColors.textColorProperty,
-      center: this.layoutBounds.center,
+    // ── controls ──
+    const radio = { spacing: 4, radioButtonOptions: { radius: 7 } };
+    const modeGroup = new AquaRadioButtonGroup(
+      model.modeProperty,
+      [
+        {
+          value: "explore",
+          createNode: () => label(strings.exploreStringProperty),
+          options: { accessibleName: strings.exploreStringProperty },
+        },
+        {
+          value: "game",
+          createNode: () => label(strings.gameStringProperty),
+          options: { accessibleName: strings.gameStringProperty },
+        },
+      ] as const,
+      { ...radio, orientation: "horizontal", spacing: 16, accessibleName: a11y.controls.modeStringProperty },
+    );
+    const processGroup = new AquaRadioButtonGroup(
+      model.processProperty,
+      PROCESSES.map((process) => ({
+        value: process,
+        createNode: () =>
+          new RichText(processLabel(process), { font: "14px serif", fill: ColliderLabColors.textColorProperty }),
+        options: { accessibleName: processLabel(process) },
+      })),
+      { ...radio, orientation: "horizontal", spacing: 12, accessibleName: a11y.controls.processStringProperty },
+    );
+    const newEventButton = new RectangularPushButton({
+      ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
+      content: new Text(strings.newEventStringProperty, { font: FONT, fill: LIGHT_SURFACE_TEXT_FILL }),
+      listener: () => model.newEvent(),
+      accessibleName: a11y.controls.newEventStringProperty,
     });
-    this.addChild(placeholderText);
+    const exploreRow = new VBox({ spacing: 6, align: "left", children: [processGroup, newEventButton] });
 
-    // ── Accessibility: per-control names ────────────────────────────────────────
-    // EVERY interactive node must carry an `accessibleName` (and an
-    // `accessibleHelpText` where useful), sourced from the StringManager `a11y`
-    // string group — never a hard-coded English literal. Sun/scenery-phet controls
-    // (NumberControl, Checkbox, ComboBox, AquaRadioButtonGroup, …) accept it as an
-    // option; a draggable plain Node needs `tagName: "div", focusable: true` too.
-    // Example (uncomment and adapt when you add a real control):
-    //
-    //   const a11y = StringManager.getInstance().getEventDisplayA11yStrings();
-    //   const exampleButton = new RectangularPushButton({
-    //     ...FLAT_RECTANGULAR_BUTTON_OPTIONS, // flat appearance, not SceneryStack's default 3-D look
-    //     content: someIcon,
-    //     listener: () => model.doSomething(),
-    //     accessibleName: a11y.controls.exampleControlStringProperty,
-    //   });
-    //   this.addChild(exampleButton);
+    const bControl = new NumberControl(strings.bFieldStringProperty, model.bFieldProperty, B_FIELD_RANGE, {
+      ...COLLIDER_LAB_NUMBER_CONTROL_OPTIONS,
+      delta: 0.1,
+      titleNodeOptions: { font: FONT, fill: ColliderLabColors.textColorProperty, maxWidth: 160 },
+      numberDisplayOptions: { decimalPlaces: 1, valuePattern: "{{value}} T" },
+      accessibleName: a11y.controls.bFieldStringProperty,
+    });
+    const checkbox = (property: BooleanProperty, text: typeof strings.showMissingPtStringProperty) =>
+      new Checkbox(property, label(text), { ...COLLIDER_LAB_CHECKBOX_OPTIONS, accessibleName: text });
+    const missingCheckbox = checkbox(model.showMissingPtProperty, strings.showMissingPtStringProperty);
+    const truthCheckbox = checkbox(model.showTruthProperty, strings.showTruthStringProperty);
+    const zoomCheckbox = checkbox(this.zoomProperty, strings.zoomTrackerStringProperty);
+    // In the game, naming the particles would give the answer away.
+    model.modeProperty.link((mode) => {
+      exploreRow.visible = mode === "explore";
+      truthCheckbox.enabled = mode === "explore";
+    });
 
-    // ── Reset All button ──────────────────────────────────────────────────────
-    // Always position at bottom-right (PhET convention).
+    const controlPanel = new ColliderLabPanel(
+      new VBox({
+        spacing: 7,
+        align: "left",
+        children: [
+          modeGroup,
+          exploreRow,
+          bControl,
+          new HBox({ spacing: 10, children: [missingCheckbox, zoomCheckbox] }),
+          truthCheckbox,
+        ],
+        excludeInvisibleChildrenFromBounds: true,
+      }),
+      { minWidth: RIGHT_WIDTH, maxWidth: RIGHT_WIDTH },
+    );
+
+    const measurementPanel = new MeasurementPanel(model, RIGHT_WIDTH);
+    const gamePanel = new GamePanel(model, RIGHT_WIDTH);
+    model.modeProperty.link((mode) => {
+      gamePanel.visible = mode === "game";
+    });
+
+    const rightColumn = new VBox({
+      spacing: 8,
+      align: "left",
+      children: [controlPanel, gamePanel, measurementPanel],
+      excludeInvisibleChildrenFromBounds: true,
+    });
+    rightColumn.boundsProperty.link(() => {
+      rightColumn.right = this.layoutBounds.maxX - SCREEN_VIEW_MARGIN;
+      rightColumn.top = this.layoutBounds.minY + 8;
+    });
+
     const resetAllButton = new ResetAllButton({
       ...FLAT_RESET_ALL_BUTTON_OPTIONS,
       listener: () => {
         model.reset();
-        this.reset();
+        this.zoomProperty.reset();
       },
       right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
       bottom: this.layoutBounds.maxY - SCREEN_VIEW_MARGIN,
     });
-    this.addChild(resetAllButton);
 
-    // ── Accessibility: keyboard / reading traversal order ───────────────────────
-    // Make the parallel DOM (Tab order and screen-reader reading order)
-    // deterministic and independent of child z-order. ScreenView throws if you
-    // set pdomOrder on itself, so add a lightweight wrapper Node that "borrows"
-    // the interactive nodes in the order a user should reach them — Reset All
-    // last. Non-interactive decoration (background, placeholder) is omitted.
+    this.children = [detector, legend, rightColumn, resetAllButton];
     this.addChild(
       new Node({
         pdomOrder: [
-          // TODO: add the sim's interactive nodes here, in traversal order
+          modeGroup,
+          processGroup,
+          newEventButton,
+          bControl,
+          missingCheckbox,
+          zoomCheckbox,
+          truthCheckbox,
+          ...gamePanel.focusables,
+          measurementPanel.nextTrackButton,
+          measurementPanel.bankButton,
           resetAllButton,
         ],
       }),
     );
   }
-
-  /**
-   * Resets view-side state (animations, panel visibility, etc.).
-   * Called by the Reset All button listener.
-   */
-  public reset(): void {
-    // TODO: reset any view-side state here
-  }
-
-  /**
-   * Steps the view forward by dt seconds for animation.
-   * @param _dt - elapsed time in seconds
-   */
-  public override step(_dt: number): void {
-    // TODO: implement animation updates here
-  }
-
-  // ── Accessibility / listeners: dispose ─────────────────────────────────────
-  // ScreenView is `isDisposable: false` and lives for the whole sim, so this
-  // class rarely needs dispose(). Child Nodes (and a live currentDetails
-  // DerivedProperty you own on a short-lived object) do. When you add
-  // DerivedProperty / Multilink / Property.link against model state, keep the
-  // references and tear them down — forks copy what they see. Pattern:
-  //
-  // private readonly disposeEventDisplayScreenView: () => void;
-  //
-  // // in the constructor, after creating the listeners:
-  // const statusMultilink = Multilink.multilink(
-  //   [model.someProperty, model.otherProperty],
-  //   (a, b) => { /* update view from model */ },
-  // );
-  // const detailsProperty = new DerivedProperty(
-  //   [model.stateProperty],
-  //   (state) => `State: ${state}`,
-  // ); // → pass as currentDetailsContent in EventDisplayScreenSummaryContent
-  // const onExternal = (v: number) => { /* … */ };
-  // model.externalProperty.link(onExternal); // Property you do NOT own
-  //
-  // this.disposeEventDisplayScreenView = () => {
-  //   statusMultilink.dispose();                 // Multilink you created
-  //   detailsProperty.dispose();                 // DerivedProperty you created
-  //   model.externalProperty.unlink(onExternal); // undo external link
-  // };
-  //
-  // public override dispose(): void {
-  //   this.disposeEventDisplayScreenView();
-  //   super.dispose();
-  // }
 }

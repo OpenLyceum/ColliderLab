@@ -126,6 +126,57 @@ const ColliderLabColors = {
     default: "#82b1ff",
     projector: "#0d47a1",
   }),
+
+  // ── Event display ──────────────────────────────────────────────────────────
+  trackerColorProperty: new ProfileColorProperty(ColliderLabNamespace, "tracker", {
+    default: "#24304f",
+    projector: "#e8eaf0",
+  }),
+  ecalColorProperty: new ProfileColorProperty(ColliderLabNamespace, "ecal", {
+    default: "#1f4d3a",
+    projector: "#c8e6c9",
+  }),
+  hcalColorProperty: new ProfileColorProperty(ColliderLabNamespace, "hcal", {
+    default: "#4a3a20",
+    projector: "#ffe0b2",
+  }),
+  solenoidColorProperty: new ProfileColorProperty(ColliderLabNamespace, "solenoid", {
+    default: "#3d3d4d",
+    projector: "#b0b0c0",
+  }),
+  muonChamberColorProperty: new ProfileColorProperty(ColliderLabNamespace, "muonChamber", {
+    default: "#3a2747",
+    projector: "#e1bee7",
+  }),
+  trackColorProperty: new ProfileColorProperty(ColliderLabNamespace, "track", {
+    default: "#e0e0e0",
+    projector: "#263238",
+  }),
+  selectedTrackColorProperty: new ProfileColorProperty(ColliderLabNamespace, "selectedTrack", {
+    default: "#ffd54f",
+    projector: "#e65100",
+  }),
+  ecalDepositColorProperty: new ProfileColorProperty(ColliderLabNamespace, "ecalDeposit", {
+    default: "#69f0ae",
+    projector: "#1b5e20",
+  }),
+  hcalDepositColorProperty: new ProfileColorProperty(ColliderLabNamespace, "hcalDeposit", {
+    default: "#ffab40",
+    projector: "#e65100",
+  }),
+  muonHitColorProperty: new ProfileColorProperty(ColliderLabNamespace, "muonHit", {
+    default: "#ea80fc",
+    projector: "#6a1b9a",
+  }),
+  missingPtColorProperty: new ProfileColorProperty(ColliderLabNamespace, "missingPt", {
+    default: "#ff5252",
+    projector: "#c62828",
+  }),
+  goodColorProperty: new ProfileColorProperty(ColliderLabNamespace, "good", {
+    default: "#81c784",
+    projector: "#2e7d32",
+  }),
+  badColorProperty: new ProfileColorProperty(ColliderLabNamespace, "bad", { default: "#e57373", projector: "#c62828" }),
 };
 
 export default ColliderLabColors;

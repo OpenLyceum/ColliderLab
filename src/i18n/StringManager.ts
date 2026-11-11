@@ -124,6 +124,16 @@ export class StringManager {
     return stringProperties.a11y.bumpHunt;
   }
 
+  /** Visible strings for the Event Display screen. */
+  public getEventDisplayStrings() {
+    return stringProperties.eventDisplay;
+  }
+
+  /** Visible strings for the Energy Frontier screen. */
+  public getEnergyFrontierStrings() {
+    return stringProperties.energyFrontier;
+  }
+
   /** Visible strings for the Bump Hunt screen. */
   public getBumpHuntStrings() {
     return stringProperties.bumpHunt;

@@ -8,13 +8,20 @@
   "a11y": {
     "eventDisplay": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "playArea": "La zone de jeu montre un détecteur vu le long du faisceau : le trajectographe au centre, puis les calorimètres électromagnétique et hadronique, le solénoïde et les chambres à muons. Un événement montre des traces courbes, des dépôts calorimétriques, des impacts de muons et une flèche de quantité de mouvement manquante.",
+        "controlArea": "Choisissez Explorer ou le jeu Qu’est-ce que c’était ?, un type de collision, de nouveaux événements, le champ magnétique, et mesurez la courbure d’une trace sélectionnée.",
+        "interactionHint": "Sélectionnez une trace pour lire son rayon et sa quantité de mouvement, puis baissez le champ et regardez les traces s’enrouler."
       },
-      "currentDetails": "La simulation est dans son état initial.",
+      "currentDetailsPattern": "Événement avec {{tracks}} traces et {{deposits}} dépôts calorimétriques ; quantité de mouvement transverse manquante {{missing}} GeV.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "mode": "Mode",
+        "process": "Type de collision",
+        "newEvent": "Produire un nouvel événement",
+        "bField": "Champ magnétique",
+        "nextTrack": "Sélectionner la trace suivante",
+        "bank": "Ajouter cette désintégration à l’estimation",
+        "guessPattern": "Proposer {{process}}",
+        "nextRound": "Événement suivant"
       }
     },
     "bumpHunt": {
@@ -39,13 +46,14 @@
     },
     "energyFrontier": {
       "screenSummary": {
-        "playArea": "La zone de jeu affiche le contenu principal de la simulation.",
-        "controlArea": "La zone de contrôle comporte un bouton Tout réinitialiser qui ramène la simulation à son état initial.",
-        "interactionHint": "Explorez la simulation en interagissant avec ses commandes."
+        "playArea": "Un graphique log–log de l’énergie de collision √s selon l’énergie du faisceau, pour une cible fixe et pour un collisionneur, avec les seuils de production et des machines historiques.",
+        "controlArea": "Choisissez des faisceaux de protons ou d’électrons et réglez l’énergie du faisceau. Les affichages comparent les deux configurations et ce que chacune peut produire.",
+        "interactionHint": "Augmentez l’énergie du faisceau et comparez la montée des deux courbes."
       },
-      "currentDetails": "La simulation est dans son état initial.",
+      "currentDetailsPattern": "Énergie du faisceau {{energy}} GeV : la cible fixe donne {{fixed}} GeV, un collisionneur {{collider}} GeV.",
       "controls": {
-        "exampleControl": "Contrôle d'exemple"
+        "beam": "Particule du faisceau",
+        "energy": "Énergie du faisceau, logarithmique"
       }
     }
   },
@@ -90,5 +98,75 @@
     "yAxis": "Événements par classe",
     "credit": "Données : collaboration CMS, CERN Open Data (CC0)",
     "gevUnit": "GeV"
+  },
+  "eventDisplay": {
+    "modeTitle": "Mode",
+    "explore": "Explorer",
+    "game": "Qu’est-ce que c’était ?",
+    "processTitle": "Collision",
+    "zToMuMu": "Z → μ⁺μ⁻",
+    "wToENu": "W → e ν",
+    "pi0ToGammaGamma": "π⁰ → γγ",
+    "kShortToPiPi": "K⁰<sub>S</sub> → π⁺π⁻",
+    "newEvent": "Nouvel événement",
+    "bField": "Champ magnétique B",
+    "showMissingPt": "Flèche de pT manquant",
+    "showTruth": "Nommer les particules",
+    "zoomTracker": "Zoom sur le trajectographe",
+    "trackTitle": "Trace sélectionnée",
+    "noTrack": "Cliquez sur une trace (ou Trace suivante) pour la mesurer.",
+    "nextTrack": "Trace suivante",
+    "hitsPattern": "{{count}} impacts",
+    "fitPattern": "Ajustement du cercle : r = {{radius}} m → pT = {{pt}} GeV/c",
+    "sagittaPattern": "Flèche : L = {{chord}} m, s = {{sagitta}} mm → pT = {{pt}} GeV/c",
+    "truePattern": "pT réel = {{pt}} GeV/c",
+    "formula": "pT [GeV/c] = 0,3 · B [T] · r [m]",
+    "kShortTitle": "Désintégration du K⁰<sub>S</sub>",
+    "flightPattern": "Distance de vol L<sub>T</sub> = {{value}} cm",
+    "kaonPtPattern": "pT du kaon = {{value}} GeV/c → γβ = {{gb}}",
+    "properTimePattern": "Temps propre t = L<sub>T</sub> / (γβ c) = {{value}} × 10⁻¹⁰ s",
+    "bank": "Ajouter à l’estimation",
+    "lifetimePattern": "{{count}} désintégrations : τ ≈ {{value}} × 10⁻¹⁰ s",
+    "kShortNote": "Les désintégrations à moins de 3 cm du faisceau sont indiscernables : les temps courts manquent et la moyenne est un peu trop longue.",
+    "missingPtPattern": "pT manquant = {{value}} GeV/c",
+    "legendTitle": "Signatures",
+    "legendElectron": "e : trace + ECAL",
+    "legendPhoton": "γ : ECAL seulement",
+    "legendMuon": "μ : traverse tout",
+    "legendHadron": "hadron : HCAL",
+    "legendNeutrino": "ν : rien",
+    "gamePrompt": "Quel processus a produit cet événement ?",
+    "right": "Bravo !",
+    "wrongPattern": "Pas tout à fait : c’était {{answer}}.",
+    "scorePattern": "Score : {{score}} / {{rounds}}",
+    "nextRound": "Événement suivant",
+    "tracker": "trajectographe",
+    "ecal": "ECAL",
+    "hcal": "HCAL",
+    "solenoid": "solénoïde",
+    "muonChambers": "chambres à muons"
+  },
+  "energyFrontier": {
+    "beamTitle": "Faisceaux",
+    "proton": "Protons",
+    "electron": "Électrons",
+    "beamEnergy": "Énergie du faisceau",
+    "beamEnergyPattern": "E = {{value}} GeV",
+    "fixedPattern": "Cible fixe : √s = {{value}} GeV",
+    "colliderPattern": "Collisionneur (deux faisceaux) : √s = {{value}} GeV",
+    "equivalentPattern": "Un faisceau sur cible fixe aurait besoin de {{value}} GeV pour égaler ce collisionneur.",
+    "xAxis": "Énergie du faisceau (GeV)",
+    "yAxis": "√s (GeV)",
+    "fixedCurve": "cible fixe",
+    "colliderCurve": "collisionneur",
+    "reachTitle": "Assez de √s pour produire…",
+    "partonNote": "Dans les collisions de protons, quarks et gluons se partagent l’énergie : la portée réelle est inférieure à √s.",
+    "antiproton": "antiproton",
+    "jpsi": "J/ψ",
+    "upsilon": "Υ",
+    "z": "Z",
+    "wPair": "W⁺W⁻",
+    "higgs": "Higgs",
+    "topPair": "paire top"
   }
 }

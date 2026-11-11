@@ -8,13 +8,20 @@
   "a11y": {
     "eventDisplay": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "El área de juego muestra un detector visto a lo largo del haz: el trazador en el centro, luego los calorímetros electromagnético y hadrónico, el solenoide y las cámaras de muones. Un evento muestra trazas curvas, depósitos en los calorímetros, impactos de muones y una flecha de momento faltante.",
+        "controlArea": "Elija Explorar o el juego ¿Qué fue esto?, un tipo de colisión, nuevos eventos, el campo magnético, y mida la curvatura de una traza seleccionada.",
+        "interactionHint": "Seleccione una traza para leer su radio y su momento, luego baje el campo y vea cómo se enroscan las trazas."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Evento con {{tracks}} trazas y {{deposits}} depósitos en los calorímetros; momento transverso faltante {{missing}} GeV.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "mode": "Modo",
+        "process": "Tipo de colisión",
+        "newEvent": "Generar un evento nuevo",
+        "bField": "Campo magnético",
+        "nextTrack": "Seleccionar la traza siguiente",
+        "bank": "Añadir esta desintegración a la estimación",
+        "guessPattern": "Proponer {{process}}",
+        "nextRound": "Evento siguiente"
       }
     },
     "bumpHunt": {
@@ -39,13 +46,14 @@
     },
     "energyFrontier": {
       "screenSummary": {
-        "playArea": "El área de juego muestra el contenido principal de la simulación.",
-        "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-        "interactionHint": "Explora la simulación interactuando con sus controles."
+        "playArea": "Una gráfica log–log de la energía de colisión √s según la energía del haz, para blanco fijo y para colisionador, con los umbrales de producción y máquinas históricas.",
+        "controlArea": "Elija haces de protones o electrones y fije la energía del haz. Los indicadores comparan las dos configuraciones y lo que cada una puede producir.",
+        "interactionHint": "Suba la energía del haz y compare cómo crecen las dos curvas."
       },
-      "currentDetails": "La simulación está en su estado inicial.",
+      "currentDetailsPattern": "Energía del haz {{energy}} GeV: el blanco fijo da {{fixed}} GeV, un colisionador {{collider}} GeV.",
       "controls": {
-        "exampleControl": "Control de ejemplo"
+        "beam": "Partícula del haz",
+        "energy": "Energía del haz, logarítmica"
       }
     }
   },
@@ -90,5 +98,75 @@
     "yAxis": "Eventos por intervalo",
     "credit": "Datos: colaboración CMS, CERN Open Data (CC0)",
     "gevUnit": "GeV"
+  },
+  "eventDisplay": {
+    "modeTitle": "Modo",
+    "explore": "Explorar",
+    "game": "¿Qué fue esto?",
+    "processTitle": "Colisión",
+    "zToMuMu": "Z → μ⁺μ⁻",
+    "wToENu": "W → e ν",
+    "pi0ToGammaGamma": "π⁰ → γγ",
+    "kShortToPiPi": "K⁰<sub>S</sub> → π⁺π⁻",
+    "newEvent": "Nuevo evento",
+    "bField": "Campo magnético B",
+    "showMissingPt": "Flecha de pT faltante",
+    "showTruth": "Nombrar las partículas",
+    "zoomTracker": "Ampliar el trazador",
+    "trackTitle": "Traza seleccionada",
+    "noTrack": "Haga clic en una traza (o Traza siguiente) para medirla.",
+    "nextTrack": "Traza siguiente",
+    "hitsPattern": "{{count}} impactos",
+    "fitPattern": "Ajuste de círculo: r = {{radius}} m → pT = {{pt}} GeV/c",
+    "sagittaPattern": "Sagita: L = {{chord}} m, s = {{sagitta}} mm → pT = {{pt}} GeV/c",
+    "truePattern": "pT real = {{pt}} GeV/c",
+    "formula": "pT [GeV/c] = 0,3 · B [T] · r [m]",
+    "kShortTitle": "Desintegración del K⁰<sub>S</sub>",
+    "flightPattern": "Distancia de vuelo L<sub>T</sub> = {{value}} cm",
+    "kaonPtPattern": "pT del kaón = {{value}} GeV/c → γβ = {{gb}}",
+    "properTimePattern": "Tiempo propio t = L<sub>T</sub> / (γβ c) = {{value}} × 10⁻¹⁰ s",
+    "bank": "Añadir a la estimación",
+    "lifetimePattern": "{{count}} desintegraciones: τ ≈ {{value}} × 10⁻¹⁰ s",
+    "kShortNote": "Las desintegraciones a menos de 3 cm del haz no se distinguen: faltan los tiempos cortos y el promedio sale algo largo.",
+    "missingPtPattern": "pT faltante = {{value}} GeV/c",
+    "legendTitle": "Firmas",
+    "legendElectron": "e: traza + ECAL",
+    "legendPhoton": "γ: solo ECAL",
+    "legendMuon": "μ: lo atraviesa todo",
+    "legendHadron": "hadrón: HCAL",
+    "legendNeutrino": "ν: nada",
+    "gamePrompt": "¿Qué proceso produjo este evento?",
+    "right": "¡Correcto!",
+    "wrongPattern": "No exactamente: era {{answer}}.",
+    "scorePattern": "Puntuación: {{score}} / {{rounds}}",
+    "nextRound": "Evento siguiente",
+    "tracker": "trazador",
+    "ecal": "ECAL",
+    "hcal": "HCAL",
+    "solenoid": "solenoide",
+    "muonChambers": "cámaras de muones"
+  },
+  "energyFrontier": {
+    "beamTitle": "Haces",
+    "proton": "Protones",
+    "electron": "Electrones",
+    "beamEnergy": "Energía del haz",
+    "beamEnergyPattern": "E = {{value}} GeV",
+    "fixedPattern": "Blanco fijo: √s = {{value}} GeV",
+    "colliderPattern": "Colisionador (dos haces): √s = {{value}} GeV",
+    "equivalentPattern": "Un haz contra blanco fijo necesitaría {{value}} GeV para igualar este colisionador.",
+    "xAxis": "Energía del haz (GeV)",
+    "yAxis": "√s (GeV)",
+    "fixedCurve": "blanco fijo",
+    "colliderCurve": "colisionador",
+    "reachTitle": "√s suficiente para producir…",
+    "partonNote": "En las colisiones de protones, quarks y gluones se reparten la energía, así que el alcance real es menor que √s.",
+    "antiproton": "antiprotón",
+    "jpsi": "J/ψ",
+    "upsilon": "Υ",
+    "z": "Z",
+    "wPair": "W⁺W⁻",
+    "higgs": "Higgs",
+    "topPair": "par top"
   }
 }
