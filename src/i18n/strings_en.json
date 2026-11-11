@@ -59,7 +59,7 @@
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Example Toggle"
+    "showDetectorLabels": "Label the detector layers"
   },
   "bumpHunt": {
     "fillModeTitle": "Fill the histogram",

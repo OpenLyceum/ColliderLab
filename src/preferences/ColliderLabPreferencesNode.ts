@@ -27,9 +27,9 @@ export class ColliderLabPreferencesNode extends VBox {
       fill: ColliderLabColors.controlSurfaceTextColorProperty,
     });
 
-    const exampleToggleCheckbox = new Checkbox(
-      preferencesModel.exampleToggleProperty,
-      new Text(prefStrings.exampleToggleStringProperty, {
+    const showDetectorLabelsCheckbox = new Checkbox(
+      preferencesModel.showDetectorLabelsProperty,
+      new Text(prefStrings.showDetectorLabelsStringProperty, {
         font: new PhetFont(14),
         fill: ColliderLabColors.controlSurfaceTextColorProperty,
       }),
@@ -37,14 +37,14 @@ export class ColliderLabPreferencesNode extends VBox {
         checkboxColor: ColliderLabColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: ColliderLabColors.controlSurfaceColorProperty,
         spacing: 8,
-        ...(tandem && { tandem: tandem.createTandem("exampleToggleCheckbox") }),
+        ...(tandem && { tandem: tandem.createTandem("showDetectorLabelsCheckbox") }),
       },
     );
 
     super({
       align: "left",
       spacing: 12,
-      children: [header, exampleToggleCheckbox],
+      children: [header, showDetectorLabelsCheckbox],
     });
   }
 }

@@ -81,6 +81,7 @@ export class MassSpectrumChartNode extends Node {
   private readonly model: BumpHuntModel;
   private readonly chartWidth: number;
   private readonly chartHeight: number;
+  private readonly multilink: { dispose(): void };
 
   public constructor(model: BumpHuntModel, chartWidth: number, chartHeight: number) {
     super();
@@ -126,7 +127,7 @@ export class MassSpectrumChartNode extends Node {
 
     this.redraw = () => this.update();
     model.histogramChangedEmitter.addListener(this.redraw);
-    Multilink.multilink(
+    this.multilink = Multilink.multilink(
       [model.fillModeProperty, model.viewRangeProperty, model.showResonanceLabelsProperty, model.fitResultProperty],
       this.redraw,
     );
@@ -262,6 +263,10 @@ export class MassSpectrumChartNode extends Node {
 
   public override dispose(): void {
     this.model.histogramChangedEmitter.removeListener(this.redraw);
+    this.multilink.dispose();
+    for (const child of [...this.children]) {
+      child.disposeSubtree();
+    }
     super.dispose();
   }
 }

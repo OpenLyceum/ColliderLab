@@ -11,7 +11,7 @@
  * 2. If it should also be user-editable at runtime, surface it as a preference
  *    in ColliderLabPreferencesModel (initialize that Property from this query parameter).
  *
- * Usage: append e.g. `?exampleToggle=true` to the sim URL.
+ * Usage: append e.g. `?showDetectorLabels=false` to the sim URL.
  */
 
 import { logGlobal } from "scenerystack/phet-core";
@@ -20,12 +20,11 @@ import ColliderLabNamespace from "../ColliderLabNamespace.js";
 
 const colliderLabQueryParameters = QueryStringMachine.getAll({
   /**
-   * Example public boolean parameter. Replace with real sim-specific parameters,
-   * or remove if the sim has none.
+   * Label the detector layers (ECAL, HCAL, solenoid, muon chambers) on the Event Display.
    */
-  exampleToggle: {
+  showDetectorLabels: {
     type: "boolean",
-    defaultValue: false,
+    defaultValue: true,
     public: true,
   },
 });

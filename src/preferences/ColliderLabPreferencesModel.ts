@@ -5,29 +5,32 @@
  * Simulation. Each preference Property takes its initial value from the
  * corresponding query parameter in colliderLabQueryParameters.
  *
- * Remove the example preference (and its query parameter / UI control) if the
- * sim has no sim-specific preferences.
+ * A single instance is shared by main.ts (the Preferences dialog) and the
+ * screen views that read it.
  */
 
 import { BooleanProperty } from "scenerystack/axon";
-import type { Tandem } from "scenerystack/tandem";
+import { Tandem } from "scenerystack/tandem";
 import ColliderLabNamespace from "../ColliderLabNamespace.js";
 import colliderLabQueryParameters from "./colliderLabQueryParameters.js";
 
 export class ColliderLabPreferencesModel {
-  /** Example preference; initial value comes from the `exampleToggle` query parameter. */
-  public readonly exampleToggleProperty: BooleanProperty;
+  /** Label the detector layers (ECAL, HCAL, solenoid, muon chambers) on the Event Display. */
+  public readonly showDetectorLabelsProperty: BooleanProperty;
 
   public constructor(tandem?: Tandem) {
-    this.exampleToggleProperty = new BooleanProperty(
-      colliderLabQueryParameters.exampleToggle,
-      tandem ? { tandem: tandem.createTandem("exampleToggleProperty") } : undefined,
+    this.showDetectorLabelsProperty = new BooleanProperty(
+      colliderLabQueryParameters.showDetectorLabels,
+      tandem ? { tandem: tandem.createTandem("showDetectorLabelsProperty") } : undefined,
     );
   }
 
   public reset(): void {
-    this.exampleToggleProperty.reset();
+    this.showDetectorLabelsProperty.reset();
   }
 }
+
+/** The sim-wide preferences. */
+export const colliderLabPreferences = new ColliderLabPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
 ColliderLabNamespace.register("ColliderLabPreferencesModel", ColliderLabPreferencesModel);

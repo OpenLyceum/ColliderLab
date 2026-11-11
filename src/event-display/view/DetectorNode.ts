@@ -17,6 +17,7 @@ import { Circle, Line, Node, Path, RichText, Text } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import ColliderLabColors from "../../ColliderLabColors.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import { colliderLabPreferences } from "../../preferences/ColliderLabPreferencesModel.js";
 import type { Point } from "../model/circleFit.js";
 import {
   DETECTOR_RADIUS,
@@ -31,7 +32,7 @@ import {
   TRACKER_RADIUS,
 } from "../model/detector.js";
 import type { EventDisplayModel } from "../model/EventDisplayModel.js";
-import { directionOnTrack, pointOnTrack, type Track } from "../model/EventGenerator.js";
+import { type DetectorEvent, directionOnTrack, pointOnTrack, type Track } from "../model/EventGenerator.js";
 
 const MISSING_PT_PIXELS_PER_GEV = 3;
 
@@ -50,6 +51,7 @@ function makeScale(outerPixels: number, zoomed: boolean): RadialScale {
 }
 
 export class DetectorNode extends Node {
+  private readonly multilinks: { dispose(): void }[] = [];
   /** Pickable track paths, in track order (for selection by keyboard too). */
   public readonly trackLayer = new Node();
 
@@ -102,12 +104,14 @@ export class DetectorNode extends Node {
             centerX: 0,
             centerY: -scale(r),
           });
-        children.push(
-          label(strings.ecalStringProperty, (ECAL_INNER + ECAL_OUTER) / 2),
-          label(strings.hcalStringProperty, (HCAL_INNER + HCAL_OUTER) / 2),
-          label(strings.solenoidStringProperty, (SOLENOID_INNER + SOLENOID_OUTER) / 2),
-          label(strings.muonChambersStringProperty, ((MUON_LAYERS[1] ?? 3.35) + (MUON_LAYERS[2] ?? 3.6)) / 2),
-        );
+        if (colliderLabPreferences.showDetectorLabelsProperty.value) {
+          children.push(
+            label(strings.ecalStringProperty, (ECAL_INNER + ECAL_OUTER) / 2),
+            label(strings.hcalStringProperty, (HCAL_INNER + HCAL_OUTER) / 2),
+            label(strings.solenoidStringProperty, (SOLENOID_INNER + SOLENOID_OUTER) / 2),
+            label(strings.muonChambersStringProperty, ((MUON_LAYERS[1] ?? 3.35) + (MUON_LAYERS[2] ?? 3.6)) / 2),
+          );
+        }
       }
       children.push(new Circle(2.5, { fill: ColliderLabColors.textColorProperty }));
       detectorLayer.children = children;
@@ -137,47 +141,44 @@ export class DetectorNode extends Node {
       return shape;
     };
 
-    const draw = (): void => {
-      const zoomed = zoomProperty.value;
-      const scale = makeScale(outerPixels, zoomed);
-      drawDetector(scale, zoomed);
-      const event = model.eventProperty.value;
-      const selected = model.selectedTrackProperty.value;
-      const showTruth = model.showTruthProperty.value;
-
+    const drawDeposits = (scale: RadialScale, event: DetectorEvent, zoomed: boolean): void => {
+      if (zoomed) {
+        depositLayer.children = [];
+        return;
+      }
       // Calorimeter deposits: radial bars whose length grows with energy.
       const deposits: Node[] = [];
-      if (!zoomed) {
-        for (const deposit of event.deposits) {
-          const [inner, outer] = deposit.layer === "ecal" ? [ECAL_INNER, ECAL_OUTER] : [HCAL_INNER, HCAL_OUTER];
-          const depth = inner + (outer - inner) * Math.min(1, 0.25 + Math.log10(1 + deposit.energy) / 2.2);
-          const half = 0.05;
-          const corner = (r: number, a: number) => toScreen(scale, { x: r * Math.cos(a), y: r * Math.sin(a) });
-          deposits.push(
-            new Path(
-              new Shape()
-                .moveToPoint(corner(inner, deposit.phi - half))
-                .lineToPoint(corner(depth, deposit.phi - half))
-                .lineToPoint(corner(depth, deposit.phi + half))
-                .lineToPoint(corner(inner, deposit.phi + half))
-                .close(),
-              {
-                fill:
-                  deposit.layer === "ecal"
-                    ? ColliderLabColors.ecalDepositColorProperty
-                    : ColliderLabColors.hcalDepositColorProperty,
-              },
-            ),
-          );
-        }
-        for (const muon of event.muonHits) {
-          for (const p of muon.points) {
-            deposits.push(new Circle(4, { fill: ColliderLabColors.muonHitColorProperty, center: toScreen(scale, p) }));
-          }
+      for (const deposit of event.deposits) {
+        const [inner, outer] = deposit.layer === "ecal" ? [ECAL_INNER, ECAL_OUTER] : [HCAL_INNER, HCAL_OUTER];
+        const depth = inner + (outer - inner) * Math.min(1, 0.25 + Math.log10(1 + deposit.energy) / 2.2);
+        const half = 0.05;
+        const corner = (r: number, a: number) => toScreen(scale, { x: r * Math.cos(a), y: r * Math.sin(a) });
+        deposits.push(
+          new Path(
+            new Shape()
+              .moveToPoint(corner(inner, deposit.phi - half))
+              .lineToPoint(corner(depth, deposit.phi - half))
+              .lineToPoint(corner(depth, deposit.phi + half))
+              .lineToPoint(corner(inner, deposit.phi + half))
+              .close(),
+            {
+              fill:
+                deposit.layer === "ecal"
+                  ? ColliderLabColors.ecalDepositColorProperty
+                  : ColliderLabColors.hcalDepositColorProperty,
+            },
+          ),
+        );
+      }
+      for (const muon of event.muonHits) {
+        for (const p of muon.points) {
+          deposits.push(new Circle(4, { fill: ColliderLabColors.muonHitColorProperty, center: toScreen(scale, p) }));
         }
       }
       depositLayer.children = deposits;
+    };
 
+    const drawTracks = (scale: RadialScale, event: DetectorEvent, zoomed: boolean, selected: number | null): void => {
       // Tracks.
       for (const child of this.trackLayer.children) {
         child.dispose();
@@ -211,7 +212,9 @@ export class DetectorNode extends Node {
         return new Node({ children: [path, ...hits] });
       });
       this.trackLayer.children = trackNodes;
+    };
 
+    const drawOverlays = (scale: RadialScale, event: DetectorEvent, selected: number | null): void => {
       // Selected-track overlays: fitted circle and sagitta construction.
       const overlays: Node[] = [];
       const measurement = model.measurementProperty.value;
@@ -281,7 +284,9 @@ export class DetectorNode extends Node {
         );
       }
       overlayLayer.children = overlays;
+    };
 
+    const drawMissingPt = (event: DetectorEvent): void => {
       // Missing-pT arrow.
       const missing = event.missingPt;
       const missingPt = Math.hypot(missing.x, missing.y);
@@ -309,58 +314,88 @@ export class DetectorNode extends Node {
       } else {
         missingLayer.children = [];
       }
+    };
 
+    const drawTruthLabels = (scale: RadialScale, event: DetectorEvent, zoomed: boolean): void => {
       // Truth labels: each particle's name near where it leaves its mark.
       const labels: Node[] = [];
-      if (showTruth) {
-        for (const particle of event.particles) {
-          const reach = zoomed
-            ? TRACKER_RADIUS * 0.85
-            : particle.kind === "muon"
-              ? 3.0
-              : particle.kind === "neutrino"
-                ? 2.2
-                : 1.15;
-          const track = event.tracks.find((t) => t.particleId === particle.id);
-          let p: Point;
-          if (track && track.exitAngle !== null) {
-            const exit = pointOnTrack(track, track.exitAngle);
-            const phi = directionOnTrack(particle.phi, particle.charge, track.exitAngle);
-            const extra = Math.max(0, reach - TRACKER_RADIUS);
-            p = zoomed
-              ? pointOnTrack(track, track.exitAngle * 0.85)
-              : { x: exit.x + extra * Math.cos(phi), y: exit.y + extra * Math.sin(phi) };
-          } else {
-            p = {
-              x: particle.origin.x + reach * Math.cos(particle.phi),
-              y: particle.origin.y + reach * Math.sin(particle.phi),
-            };
-          }
-          const text = new RichText(particle.symbol, {
-            font: "bold 16px serif",
-            fill:
-              particle.kind === "neutrino"
-                ? ColliderLabColors.missingPtColorProperty
-                : ColliderLabColors.resonanceLabelColorProperty,
-            pickable: false,
-          });
-          text.center = toScreen(scale, p);
-          labels.push(text);
+      for (const particle of event.particles) {
+        const reach = zoomed
+          ? TRACKER_RADIUS * 0.85
+          : particle.kind === "muon"
+            ? 3.0
+            : particle.kind === "neutrino"
+              ? 2.2
+              : 1.15;
+        const track = event.tracks.find((t) => t.particleId === particle.id);
+        let p: Point;
+        if (track && track.exitAngle !== null) {
+          const exit = pointOnTrack(track, track.exitAngle);
+          const phi = directionOnTrack(particle.phi, particle.charge, track.exitAngle);
+          const extra = Math.max(0, reach - TRACKER_RADIUS);
+          p = zoomed
+            ? pointOnTrack(track, track.exitAngle * 0.85)
+            : { x: exit.x + extra * Math.cos(phi), y: exit.y + extra * Math.sin(phi) };
+        } else {
+          p = {
+            x: particle.origin.x + reach * Math.cos(particle.phi),
+            y: particle.origin.y + reach * Math.sin(particle.phi),
+          };
         }
+        const text = new RichText(particle.symbol, {
+          font: "bold 16px serif",
+          fill:
+            particle.kind === "neutrino"
+              ? ColliderLabColors.missingPtColorProperty
+              : ColliderLabColors.resonanceLabelColorProperty,
+          pickable: false,
+        });
+        text.center = toScreen(scale, p);
+        labels.push(text);
       }
       labelLayer.children = labels;
     };
 
-    Multilink.multilink(
-      [
-        model.eventProperty,
-        model.selectedTrackProperty,
-        model.showMissingPtProperty,
-        model.showTruthProperty,
-        zoomProperty,
-        model.measurementProperty,
-      ],
-      draw,
+    const draw = (): void => {
+      const zoomed = zoomProperty.value;
+      const scale = makeScale(outerPixels, zoomed);
+      const event = model.eventProperty.value;
+      const selected = model.selectedTrackProperty.value;
+      drawDetector(scale, zoomed);
+      drawDeposits(scale, event, zoomed);
+      drawTracks(scale, event, zoomed, selected);
+      drawOverlays(scale, event, selected);
+      drawMissingPt(event);
+      if (model.showTruthProperty.value) {
+        drawTruthLabels(scale, event, zoomed);
+      } else {
+        labelLayer.children = [];
+      }
+    };
+
+    this.multilinks.push(
+      Multilink.multilink(
+        [
+          model.eventProperty,
+          model.selectedTrackProperty,
+          model.showMissingPtProperty,
+          model.showTruthProperty,
+          zoomProperty,
+          model.measurementProperty,
+          colliderLabPreferences.showDetectorLabelsProperty,
+        ],
+        draw,
+      ),
     );
+  }
+
+  public override dispose(): void {
+    for (const multilink of this.multilinks) {
+      multilink.dispose();
+    }
+    for (const child of [...this.children]) {
+      child.disposeSubtree();
+    }
+    super.dispose();
   }
 }

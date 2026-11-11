@@ -2,23 +2,44 @@
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-A reusable SceneryStack simulation template for one or N screens, built with
-[SceneryStack](https://scenerystack.org/), Vite 8, TypeScript 7, and Biome 2.
+You are the detector. Read simulated collisions the way a particle physicist does: curving tracks
+give momentum through **pT = 0.3·B·r**, the layers a particle lights up give its identity, and the
+missing-momentum arrow reveals the neutrino. Then build the famous dimuon mass spectrum from
+**100 000 real CMS events** and weigh the Z boson. It is pitched at introductory university physics
+and senior high school. Built with [SceneryStack](https://scenerystack.org/); runs offline as a
+Progressive Web App.
 
 ## Features
 
-- SceneryStack scaffold with model/view separation (`rename` + `scaffold-screens` for one or N screens)
-- English, Spanish, and French localization via `StringManager`
-- Default and projector color profiles
-- Progressive Web App (installable, offline-capable)
-- Git hooks for Biome pre-commit checks
-- Shared GitHub Actions CI via `OpenLyceum/Baton`
+- **Event Display.** A barrel detector seen along the beam: silicon tracker, electromagnetic and
+  hadronic calorimeters, solenoid and muon chambers. Generate Z → μ⁺μ⁻, W → eν, π⁰ → γγ and
+  K⁰<sub>S</sub> → π⁺π⁻ events.
+  - Select a track to fit a circle to its hits, or use the sagitta s = L²/8r, and read pT.
+  - Change the field B and watch the same event re-bend.
+  - Zoom on the tracker; toggle the missing-pT arrow and the particle names.
+  - K⁰<sub>S</sub> decays sit away from the collision point. The flight distance and pT give γβ and
+    the proper time; bank decays to estimate the lifetime.
+  - **What was this?** game: name the process behind a random event.
+- **Bump Hunt.** Real CMS 2011 dimuon data (CERN Open Data, CC0).
+  - Work one pair at a time through m² = (E₁+E₂)² − |p⃗₁+p⃗₂|², stream events into the histogram,
+    or show all 100 000 at once.
+  - The log–log spectrum shows ρ/ω, φ, J/ψ, ψ′, the Υ states and the Z, decades apart.
+  - **Fit Z**: a Breit–Wigner smeared by the detector resolution gives m<sub>Z</sub>, Γ and
+    τ = ħ/Γ ≈ 3 × 10⁻²⁵ s.
+- **Energy Frontier.** √s against beam energy for a fixed target and for a collider, with
+  production thresholds and real machines from the Bevatron to the LHC and cosmic rays.
+- **Accessible:**
+  - Every control works from the keyboard.
+  - Each screen has a live screen summary and a keyboard-help dialog.
+  - English, French and Spanish.
+  - Default and projector colour profiles.
+  - Installable PWA.
+  - A preference (or `?showDetectorLabels=false`) hides the detector-layer labels.
 
 ## Quick Start
 
 ```bash
 npm install
-npm run icons    # generate PNG icons from public/icons/icon.svg
 npm start        # dev server → http://localhost:5173
 ```
 
@@ -29,7 +50,7 @@ npm start        # dev server → http://localhost:5173
 | `npm start` / `npm run dev` | Start Vite dev server |
 | `npm run build` | Type-check + production build → `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run Vitest unit tests (includes memory-leak suite) |
+| `npm test` | Run Vitest unit tests (includes memory-leak suite and real-data checks) |
 | `npm run test:fuzz` | Optional Playwright fuzz smoke: pointer (`?fuzz`) + keyboard (`?fuzzBoard`), with `?ea`, 30s each |
 | `npm run test:fuzz -- 90` | Same fuzz for 90 seconds (`--duration 90` or `FUZZ_DURATION=90` also work) |
 | `npm run test:fuzz:quick` | Shorter fuzz smoke (10s) |
@@ -39,12 +60,11 @@ npm start        # dev server → http://localhost:5173
 | `npm run format` | Auto-format all files |
 | `npm run fix` | Lint + auto-fix |
 | `npm run icons` | Regenerate PNG icons from `public/icons/icon.svg` |
-| `npm run rename` | Sim-level fork/rename (`--id`, `--name`) |
-| `npm run scaffold-screens` | Emit N fleet-named screen packages from `event-display/` (`--shared-model` optional) |
 | `npm run release` | `check && lint && build && test`, then version patch + push tags |
 | `npm run clean` | Remove `dist/` |
 
-New sims start at `version: "0.0.0"` in `package.json`. Bump only when cutting a release (for example `npm version patch` and a matching git tag). Keep `name` in kebab-case; it is separate from the SceneryStack sim identifier in `src/init.ts`, which reads its `version` from `package.json`.
+The CMS data come from an offline Python script, `scripts/cms/fetch_dimuons.py` (standard library
+only). Its outputs are committed, so you only run it to change the packing; see the script's header.
 
 ## Tech Stack
 
@@ -53,12 +73,13 @@ New sims start at `version: "0.0.0"` in `package.json`. Bump only when cutting a
 | [SceneryStack](https://scenerystack.org/) | ^3.0.0 | Simulation framework |
 | [Vite](https://vitejs.dev/) | ^8 | Build tool + dev server |
 | [TypeScript](https://www.typescriptlang.org/) | ^7 | Type-safe JavaScript |
-| [Biome](https://biomejs.dev/) | ^2.5 | Linting + formatting |
+| [Biome](https://biomejs.dev/) | ^2.6 | Linting + formatting |
 | [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) | ^2 | PWA + service worker |
 
 ## License
 
 GNU Affero General Public License v3.0 — see [OpenLyceum org license](https://github.com/OpenLyceum/.github/blob/main/LICENSE).
+The CMS data are CC0; see [CREDITS.md](CREDITS.md) for data credits.
 
 ## Contributing
 

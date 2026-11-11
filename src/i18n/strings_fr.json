@@ -59,7 +59,7 @@
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Exemple de bascule"
+    "showDetectorLabels": "Nommer les couches du détecteur"
   },
   "bumpHunt": {
     "fillModeTitle": "Remplir l’histogramme",

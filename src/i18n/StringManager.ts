@@ -57,9 +57,6 @@ export type ColliderLabA11yStrings = {
     readonly interactionHintStringProperty: ReadOnlyProperty<string>;
   };
   readonly currentDetailsStringProperty: ReadOnlyProperty<string>;
-  readonly controls: {
-    readonly exampleControlStringProperty: ReadOnlyProperty<string>;
-  };
 };
 
 /**
@@ -68,7 +65,7 @@ export type ColliderLabA11yStrings = {
  */
 export type ColliderLabPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
-  readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
+  readonly showDetectorLabelsStringProperty: ReadOnlyProperty<string>;
 };
 
 /**

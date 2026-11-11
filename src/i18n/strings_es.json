@@ -59,7 +59,7 @@
   },
   "preferences": {
     "title": "Simulación",
-    "exampleToggle": "Ejemplo de alternancia"
+    "showDetectorLabels": "Rotular las capas del detector"
   },
   "bumpHunt": {
     "fillModeTitle": "Llenar el histograma",

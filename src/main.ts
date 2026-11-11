@@ -26,14 +26,14 @@ import ColliderLabColors from "./ColliderLabColors.js";
 import { EnergyFrontierScreen } from "./energy-frontier/EnergyFrontierScreen.js";
 import { EventDisplayScreen } from "./event-display/EventDisplayScreen.js";
 import { StringManager } from "./i18n/StringManager.js";
-import { ColliderLabPreferencesModel } from "./preferences/ColliderLabPreferencesModel.js";
+import { colliderLabPreferences } from "./preferences/ColliderLabPreferencesModel.js";
 import { ColliderLabPreferencesNode } from "./preferences/ColliderLabPreferencesNode.js";
 
 onReadyToLaunch(() => {
   const stringManager = StringManager.getInstance();
 
   // Simulation-specific preferences; initial values come from colliderLabQueryParameters.
-  const simPreferences = new ColliderLabPreferencesModel(Tandem.ROOT.createTandem("preferences"));
+  const simPreferences = colliderLabPreferences;
 
   const screens = [
     new EventDisplayScreen({
