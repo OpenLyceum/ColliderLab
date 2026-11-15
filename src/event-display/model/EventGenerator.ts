@@ -46,6 +46,7 @@ type ParticleKind = (typeof KINDS)[number];
 /** K⁰_S mean decay length cτ, m (PDG: 2.684 cm). */
 const K_SHORT_C_TAU = K_SHORT.C_TAU;
 export const K_SHORT_MASS = MASS.K_SHORT;
+/** @internal Exported for unit tests; not part of the application API. */
 export const K_SHORT_LIFETIME = K_SHORT.LIFETIME;
 /** Speed of light, m/s. */
 export const SPEED_OF_LIGHT = C;
@@ -144,7 +145,10 @@ export function pointOnTrack(track: Pick<Track, "center" | "origin" | "charge">,
   };
 }
 
-/** Smallest turning angle α > 0 at which the track reaches radius ρ from the beam; null if never. */
+/**
+ * Smallest turning angle α > 0 at which the track reaches radius ρ from the beam; null if never.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function angleToRadius(
   track: Pick<Track, "center" | "origin" | "charge" | "radius">,
   rho: number,

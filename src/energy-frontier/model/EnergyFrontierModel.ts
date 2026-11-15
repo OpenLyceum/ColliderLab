@@ -34,7 +34,10 @@ export function sqrtSCollider(beamEnergy: number): number {
   return 2 * beamEnergy;
 }
 
-/** Beam energy a fixed-target machine would need to reach the same √s. */
+/**
+ * Beam energy a fixed-target machine would need to reach the same √s.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function equivalentFixedTargetEnergy(sqrtS: number, beamMass: number, targetMass: number): number {
   return (sqrtS * sqrtS - beamMass * beamMass - targetMass * targetMass) / (2 * targetMass);
 }

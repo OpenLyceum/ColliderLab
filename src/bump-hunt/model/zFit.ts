@@ -22,7 +22,10 @@ import { MASS, Z_FIT } from "../../ColliderLabConstants.js";
 import { nelderMead, uncertaintiesFromNll } from "../../common/model/nelderMead.js";
 import type { MassHistogram } from "./MassHistogram.js";
 
-/** ħ in GeV·s (CODATA 2018: 6.582119569 × 10⁻²⁵ GeV·s). */
+/**
+ * ħ in GeV·s (CODATA 2018: 6.582119569 × 10⁻²⁵ GeV·s).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const HBAR_GEV_S = Z_FIT.HBAR_GEV_S;
 
 /** PDG 2024 reference values, for comparison readouts. */
@@ -32,7 +35,10 @@ export const PDG_Z_WIDTH_GEV = Z_FIT.PDG_WIDTH_GEV;
 /** Default fit window, GeV. */
 const Z_FIT_WINDOW: readonly [number, number] = [Z_FIT.WINDOW_MIN, Z_FIT.WINDOW_MAX];
 
-/** Pseudo-Voigt density in m (integrates to 1). */
+/**
+ * Pseudo-Voigt density in m (integrates to 1).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function voigtDensity(m: number, mass: number, width: number, sigma: number): number {
   const fg = Z_FIT.FWHM_SIGMA_FACTOR * sigma;
   const fl = width;
