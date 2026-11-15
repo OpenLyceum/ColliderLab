@@ -29,7 +29,7 @@ export const DETECTOR_RADIUS = DETECTOR_GEOMETRY.DETECTOR_RADIUS;
 export const HIT_RESOLUTION = DETECTOR_GEOMETRY.HIT_RESOLUTION;
 
 /** pT [GeV/c] = 0.3 · B [T] · r [m]. */
-export const PT_PER_TESLA_METRE = B_FIELD.PT_PER_TESLA_METRE;
+const PT_PER_TESLA_METRE = B_FIELD.PT_PER_TESLA_METRE;
 
 export function radiusOfCurvature(pt: number, bField: number): number {
   return pt / (PT_PER_TESLA_METRE * bField);

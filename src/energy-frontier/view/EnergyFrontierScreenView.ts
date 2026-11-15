@@ -30,7 +30,7 @@ import { SqrtSChartNode } from "./SqrtSChartNode.js";
 const { RIGHT_WIDTH } = ENERGY_FRONTIER_LAYOUT;
 
 /** 12345 → "1.2 × 10⁴"-style RichText for big energies, plain below ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD. */
-export function formatEnergy(value: number): string {
+function formatEnergy(value: number): string {
   if (value < ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD) {
     return value < ENERGY_FRONTIER.SMALL_VALUE_THRESHOLD ? value.toFixed(2) : value.toFixed(0);
   }

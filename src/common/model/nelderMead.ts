@@ -95,7 +95,7 @@ export function nelderMead(
 }
 
 /** Inverts a small square matrix by Gauss–Jordan elimination; null if singular. */
-export function invert(matrix: readonly (readonly number[])[]): number[][] | null {
+function invert(matrix: readonly (readonly number[])[]): number[][] | null {
   const n = matrix.length;
   const a = matrix.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))]);
   for (let col = 0; col < n; col++) {

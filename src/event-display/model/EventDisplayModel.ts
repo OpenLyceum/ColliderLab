@@ -27,11 +27,11 @@ import { ptFromRadius } from "./detector.js";
 import { type DetectorEvent, generateEvent, PROCESSES, type Process, simulateDetector } from "./EventGenerator.js";
 import { type KShortMeasurement, measureKShort } from "./kShortMeasurement.js";
 
-export const MODES = ["explore", "game"] as const;
+const MODES = ["explore", "game"] as const;
 export type Mode = (typeof MODES)[number];
 
 export const B_FIELD_RANGE = B_FIELD.RANGE;
-export const DEFAULT_B_FIELD = B_FIELD.DEFAULT;
+const DEFAULT_B_FIELD = B_FIELD.DEFAULT;
 
 export type TrackMeasurement = {
   readonly fit: CircleFit | null;

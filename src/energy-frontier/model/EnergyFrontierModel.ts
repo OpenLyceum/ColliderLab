@@ -17,7 +17,7 @@ import { DerivedProperty, NumberProperty, StringUnionProperty, type TReadOnlyPro
 import type { TModel } from "scenerystack/joist";
 import { ENERGY_FRONTIER, MASS } from "../../ColliderLabConstants.js";
 
-export const BEAMS = ["proton", "electron"] as const;
+const BEAMS = ["proton", "electron"] as const;
 export type Beam = (typeof BEAMS)[number];
 
 export const PROTON_MASS = MASS.PROTON;

@@ -30,7 +30,7 @@ export const PDG_Z_MASS_GEV = MASS.Z;
 export const PDG_Z_WIDTH_GEV = Z_FIT.PDG_WIDTH_GEV;
 
 /** Default fit window, GeV. */
-export const Z_FIT_WINDOW: readonly [number, number] = [Z_FIT.WINDOW_MIN, Z_FIT.WINDOW_MAX];
+const Z_FIT_WINDOW: readonly [number, number] = [Z_FIT.WINDOW_MIN, Z_FIT.WINDOW_MAX];
 
 /** Pseudo-Voigt density in m (integrates to 1). */
 export function voigtDensity(m: number, mass: number, width: number, sigma: number): number {

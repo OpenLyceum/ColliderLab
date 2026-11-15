@@ -13,7 +13,7 @@
 import { FourVector } from "../../common/model/FourVector.js";
 
 /** Muon rest mass, GeV/c² (PDG). */
-export const MUON_MASS_GEV = 0.1056583755;
+const MUON_MASS_GEV = 0.1056583755;
 
 /** Shape of the packed JSON module. Exported for tests. */
 export type PackedDimuons = {

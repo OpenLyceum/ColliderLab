@@ -24,22 +24,22 @@ import { emptyLogHistogram, emptyZHistogram, fullSpectrum, zRegionSpectrum } fro
 import type { MassHistogram } from "./MassHistogram.js";
 import { fitZ, type ZFitResult } from "./zFit.js";
 
-export const FILL_MODES = ["pair", "stream", "full"] as const;
+const FILL_MODES = ["pair", "stream", "full"] as const;
 export type FillMode = (typeof FILL_MODES)[number];
 
-export const VIEW_RANGES = ["full", "z"] as const;
+const VIEW_RANGES = ["full", "z"] as const;
 export type ViewRange = (typeof VIEW_RANGES)[number];
 
-export const LOAD_STATES = ["idle", "loading", "ready", "failed"] as const;
+const LOAD_STATES = ["idle", "loading", "ready", "failed"] as const;
 export type LoadState = (typeof LOAD_STATES)[number];
 
 /** Events per second in "stream" mode. */
 export const STREAM_RATE_RANGE = BUMP_HUNT.STREAM_RATE_RANGE;
-export const DEFAULT_STREAM_RATE = BUMP_HUNT.DEFAULT_STREAM_RATE;
+const DEFAULT_STREAM_RATE = BUMP_HUNT.DEFAULT_STREAM_RATE;
 
 /** Assumed detector mass resolution at the Z, GeV. CMS 2011 muons: ~1.3 GeV. */
 export const RESOLUTION_RANGE = BUMP_HUNT.RESOLUTION_RANGE;
-export const DEFAULT_RESOLUTION = BUMP_HUNT.DEFAULT_RESOLUTION;
+const DEFAULT_RESOLUTION = BUMP_HUNT.DEFAULT_RESOLUTION;
 
 /** Fixed seed so a classroom sees the same event sequence. */
 const SHUFFLE_SEED = BUMP_HUNT.SHUFFLE_SEED;
@@ -232,6 +232,6 @@ export class BumpHuntModel implements TModel {
 }
 
 /** Deterministic shuffle of the event order. */
-export function shuffledOrder(size: number, seed: number): Uint32Array {
+function shuffledOrder(size: number, seed: number): Uint32Array {
   return new SeededRandom(seed).permutation(size);
 }

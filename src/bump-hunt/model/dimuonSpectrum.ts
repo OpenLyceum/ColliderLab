@@ -39,7 +39,6 @@ export const RESONANCES: readonly Resonance[] = [
   { id: "z", symbol: "Z", mass: MASS.Z, content: "—", clearPeak: true },
 ];
 
-export const SPECTRUM_SOURCE = spectrum.source;
 export const SPECTRUM_EVENTS: number = spectrum.events;
 
 /** Fresh copies, so callers may not mutate the shared data. */

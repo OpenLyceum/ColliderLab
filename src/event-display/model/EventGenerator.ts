@@ -40,11 +40,11 @@ import {
 export const PROCESSES = ["zToMuMu", "wToENu", "pi0ToGammaGamma", "kShortToPiPi"] as const;
 export type Process = (typeof PROCESSES)[number];
 
-export const KINDS = ["electron", "photon", "muon", "chargedHadron", "neutralHadron", "neutrino"] as const;
-export type ParticleKind = (typeof KINDS)[number];
+const KINDS = ["electron", "photon", "muon", "chargedHadron", "neutralHadron", "neutrino"] as const;
+type ParticleKind = (typeof KINDS)[number];
 
 /** K⁰_S mean decay length cτ, m (PDG: 2.684 cm). */
-export const K_SHORT_C_TAU = K_SHORT.C_TAU;
+const K_SHORT_C_TAU = K_SHORT.C_TAU;
 export const K_SHORT_MASS = MASS.K_SHORT;
 export const K_SHORT_LIFETIME = K_SHORT.LIFETIME;
 /** Speed of light, m/s. */
@@ -77,7 +77,7 @@ export type Track = {
   readonly hits: readonly Point[];
 };
 
-export type Deposit = {
+type Deposit = {
   readonly particleId: number;
   readonly layer: "ecal" | "hcal";
   /** Angle around the beam where the particle enters the calorimeter, rad. */
