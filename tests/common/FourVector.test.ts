@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FourVector, pairMass } from "../../src/common/model/FourVector.js";
+import { FourVector } from "../../src/common/model/FourVector.js";
 
 describe("FourVector", () => {
   it("round-trips pT, η, φ and mass", () => {
@@ -13,7 +13,7 @@ describe("FourVector", () => {
   it("back-to-back massless pair has m = 2p", () => {
     const a = new FourVector(45, 45, 0, 0);
     const b = new FourVector(45, -45, 0, 0);
-    expect(pairMass(a, b)).toBeCloseTo(90, 10);
+    expect(a.plus(b).mass).toBeCloseTo(90, 10);
   });
 
   it("pair mass is invariant under a boost along z", () => {
@@ -23,6 +23,6 @@ describe("FourVector", () => {
       const gamma = 1 / Math.sqrt(1 - beta * beta);
       return new FourVector(gamma * (v.energy - beta * v.pz), v.px, v.py, gamma * (v.pz - beta * v.energy));
     };
-    expect(pairMass(boost(a, 0.6), boost(b, 0.6))).toBeCloseTo(pairMass(a, b), 9);
+    expect(boost(a, 0.6).plus(boost(b, 0.6)).mass).toBeCloseTo(a.plus(b).mass, 9);
   });
 });

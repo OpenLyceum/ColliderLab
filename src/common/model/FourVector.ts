@@ -62,12 +62,3 @@ export class FourVector {
     return new FourVector(this.energy + other.energy, this.px + other.px, this.py + other.py, this.pz + other.pz);
   }
 }
-
-/**
- * Invariant mass of a pair, m² = (E₁ + E₂)² − |p⃗₁ + p⃗₂|², in GeV/c².
- * This is the quantity students compute by hand on the Bump Hunt screen.
- * @internal Exported for unit tests; not part of the application API.
- */
-export function pairMass(a: FourVector, b: FourVector): number {
-  return a.plus(b).mass;
-}
