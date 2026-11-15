@@ -14,17 +14,17 @@
  */
 
 import { DerivedProperty, NumberProperty, StringUnionProperty, type TReadOnlyProperty } from "scenerystack/axon";
-import { Range } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { ENERGY_FRONTIER, MASS } from "../../ColliderLabConstants.js";
 
 export const BEAMS = ["proton", "electron"] as const;
 export type Beam = (typeof BEAMS)[number];
 
-export const PROTON_MASS = 0.938272;
-export const ELECTRON_MASS = 0.000511;
+export const PROTON_MASS = MASS.PROTON;
+export const ELECTRON_MASS = MASS.ELECTRON;
 
 /** log₁₀ of the beam energy in GeV: 1 GeV to 10¹² GeV (beyond the highest cosmic rays). */
-export const LOG_ENERGY_RANGE = new Range(0, 12);
+export const LOG_ENERGY_RANGE = ENERGY_FRONTIER.LOG_ENERGY_RANGE;
 
 export function sqrtSFixedTarget(beamMass: number, beamEnergy: number, targetMass: number): number {
   return Math.sqrt(beamMass * beamMass + targetMass * targetMass + 2 * beamEnergy * targetMass);
@@ -49,12 +49,12 @@ export type Threshold = {
 
 export const THRESHOLDS: readonly Threshold[] = [
   { id: "antiproton", reaction: "p p → p p p p̄", sqrtS: 4 * PROTON_MASS },
-  { id: "jpsi", reaction: "p p → p p J/ψ", sqrtS: 2 * PROTON_MASS + 3.0969 },
-  { id: "upsilon", reaction: "p p → p p Υ", sqrtS: 2 * PROTON_MASS + 9.4603 },
-  { id: "z", reaction: "e⁺e⁻ → Z", sqrtS: 91.188 },
-  { id: "wPair", reaction: "e⁺e⁻ → W⁺W⁻", sqrtS: 2 * 80.369 },
-  { id: "higgs", reaction: "e⁺e⁻ → Z H", sqrtS: 91.188 + 125.2 },
-  { id: "topPair", reaction: "→ t t̄", sqrtS: 2 * 172.6 },
+  { id: "jpsi", reaction: "p p → p p J/ψ", sqrtS: 2 * PROTON_MASS + MASS.JPSI },
+  { id: "upsilon", reaction: "p p → p p Υ", sqrtS: 2 * PROTON_MASS + MASS.UPSILON_1S },
+  { id: "z", reaction: "e⁺e⁻ → Z", sqrtS: MASS.Z },
+  { id: "wPair", reaction: "e⁺e⁻ → W⁺W⁻", sqrtS: 2 * MASS.W },
+  { id: "higgs", reaction: "e⁺e⁻ → Z H", sqrtS: MASS.Z + MASS.HIGGS },
+  { id: "topPair", reaction: "→ t t̄", sqrtS: 2 * MASS.TOP },
 ];
 
 export type Machine = {
@@ -95,7 +95,9 @@ export function machineSqrtS(machine: Machine): number {
 
 export class EnergyFrontierModel implements TModel {
   public readonly beamProperty = new StringUnionProperty<Beam>("proton", { validValues: BEAMS });
-  public readonly logEnergyProperty = new NumberProperty(2, { range: LOG_ENERGY_RANGE });
+  public readonly logEnergyProperty = new NumberProperty(ENERGY_FRONTIER.DEFAULT_LOG_ENERGY, {
+    range: LOG_ENERGY_RANGE,
+  });
 
   public readonly beamEnergyProperty: TReadOnlyProperty<number>;
   public readonly fixedTargetProperty: TReadOnlyProperty<number>;

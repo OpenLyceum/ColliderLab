@@ -8,6 +8,8 @@
  *    from it, so r ≈ L²/8s.
  */
 
+import { CIRCLE_FIT } from "../../ColliderLabConstants.js";
+
 export type Point = { readonly x: number; readonly y: number };
 
 export type CircleFit = { readonly cx: number; readonly cy: number; readonly radius: number };
@@ -26,7 +28,7 @@ function solve3(m: readonly (readonly number[])[], v: readonly number[]): [numbe
     );
   };
   const d = det(m);
-  if (Math.abs(d) < 1e-18) {
+  if (Math.abs(d) < CIRCLE_FIT.SINGULAR_THRESHOLD) {
     return null;
   }
   const column = (i: number) => m.map((row, r) => row.map((x, c) => (c === i ? (v[r] ?? 0) : x)));
@@ -35,7 +37,7 @@ function solve3(m: readonly (readonly number[])[], v: readonly number[]): [numbe
 
 /** Kåsa algebraic circle fit; null for fewer than 3 points or collinear hits. */
 export function fitCircle(points: readonly Point[]): CircleFit | null {
-  if (points.length < 3) {
+  if (points.length < CIRCLE_FIT.MIN_HITS) {
     return null;
   }
   let sx = 0;
@@ -84,7 +86,7 @@ export type Sagitta = { readonly chord: number; readonly sagitta: number; readon
  * the first term is the usual small-sagitta approximation).
  */
 export function sagittaOf(points: readonly Point[]): Sagitta | null {
-  if (points.length < 3) {
+  if (points.length < CIRCLE_FIT.MIN_HITS) {
     return null;
   }
   const first = points[0];

@@ -16,6 +16,7 @@ import type { Color } from "scenerystack/scenery";
 import { Circle, Line, Node, Path, RichText, Text } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { DETECTOR_GEOMETRY, DETECTOR_VIEW, FONTS } from "../../ColliderLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import { colliderLabPreferences } from "../../preferences/ColliderLabPreferencesModel.js";
 import type { Point } from "../model/circleFit.js";
@@ -34,8 +35,6 @@ import {
 import type { EventDisplayModel } from "../model/EventDisplayModel.js";
 import { type DetectorEvent, directionOnTrack, pointOnTrack, type Track } from "../model/EventGenerator.js";
 
-const MISSING_PT_PIXELS_PER_GEV = 3;
-
 /** Maps detector radius (m) to screen radius (px). */
 type RadialScale = (r: number) => number;
 
@@ -44,7 +43,7 @@ function makeScale(outerPixels: number, zoomed: boolean): RadialScale {
     const k = outerPixels / TRACKER_RADIUS;
     return (r) => r * k;
   }
-  const trackerPixels = outerPixels * 0.5;
+  const trackerPixels = outerPixels * DETECTOR_VIEW.TRACKER_PIXEL_FRACTION;
   const k = trackerPixels / TRACKER_RADIUS;
   const outer = (outerPixels - trackerPixels) / (DETECTOR_RADIUS - TRACKER_RADIUS);
   return (r) => (r <= TRACKER_RADIUS ? r * k : trackerPixels + (r - TRACKER_RADIUS) * outer);
@@ -65,7 +64,7 @@ export class DetectorNode extends Node {
     const missingLayer = new Node();
     this.children = [detectorLayer, depositLayer, this.trackLayer, overlayLayer, missingLayer, labelLayer];
     // Clip to the drawing circle so zoomed views stay tidy.
-    this.clipArea = Shape.circle(0, 0, outerPixels + 2);
+    this.clipArea = Shape.circle(0, 0, outerPixels + DETECTOR_VIEW.CLIP_PADDING);
 
     const toScreen = (scale: RadialScale, p: Point): Vector2 => {
       const r = Math.hypot(p.x, p.y);
@@ -82,10 +81,18 @@ export class DetectorNode extends Node {
       const ring = (inner: number, outer: number, color: TReadOnlyProperty<Color>) =>
         new Circle((scale(inner) + scale(outer)) / 2, { stroke: color, lineWidth: scale(outer) - scale(inner) });
       const children: Node[] = [
-        new Circle(scale(TRACKER_RADIUS), { fill: ColliderLabColors.trackerColorProperty, opacity: 0.6 }),
+        new Circle(scale(TRACKER_RADIUS), {
+          fill: ColliderLabColors.trackerColorProperty,
+          opacity: DETECTOR_VIEW.TRACKER_FILL_OPACITY,
+        }),
       ];
       for (const layer of TRACKER_LAYERS) {
-        children.push(new Circle(scale(layer), { stroke: ColliderLabColors.gridLineColorProperty, lineWidth: 0.6 }));
+        children.push(
+          new Circle(scale(layer), {
+            stroke: ColliderLabColors.gridLineColorProperty,
+            lineWidth: DETECTOR_VIEW.LAYER_LINE_WIDTH,
+          }),
+        );
       }
       if (!zoomed) {
         children.push(
@@ -94,13 +101,18 @@ export class DetectorNode extends Node {
           ring(SOLENOID_INNER, SOLENOID_OUTER, ColliderLabColors.solenoidColorProperty),
         );
         for (const layer of MUON_LAYERS) {
-          children.push(new Circle(scale(layer), { stroke: ColliderLabColors.muonChamberColorProperty, lineWidth: 6 }));
+          children.push(
+            new Circle(scale(layer), {
+              stroke: ColliderLabColors.muonChamberColorProperty,
+              lineWidth: DETECTOR_VIEW.MUON_RING_LINE_WIDTH,
+            }),
+          );
         }
         const label = (text: TReadOnlyProperty<string>, r: number) =>
           new Text(text, {
-            font: "11px sans-serif",
+            font: FONTS.SMALL,
             fill: ColliderLabColors.textColorProperty,
-            opacity: 0.6,
+            opacity: DETECTOR_VIEW.LAYER_LABEL_OPACITY,
             centerX: 0,
             centerY: -scale(r),
           });
@@ -109,18 +121,21 @@ export class DetectorNode extends Node {
             label(strings.ecalStringProperty, (ECAL_INNER + ECAL_OUTER) / 2),
             label(strings.hcalStringProperty, (HCAL_INNER + HCAL_OUTER) / 2),
             label(strings.solenoidStringProperty, (SOLENOID_INNER + SOLENOID_OUTER) / 2),
-            label(strings.muonChambersStringProperty, ((MUON_LAYERS[1] ?? 3.35) + (MUON_LAYERS[2] ?? 3.6)) / 2),
+            label(
+              strings.muonChambersStringProperty,
+              (DETECTOR_GEOMETRY.MUON_LAYERS[1] + DETECTOR_GEOMETRY.MUON_LAYERS[2]) / 2,
+            ),
           );
         }
       }
-      children.push(new Circle(2.5, { fill: ColliderLabColors.textColorProperty }));
+      children.push(new Circle(DETECTOR_VIEW.BEAM_SPOT_RADIUS, { fill: ColliderLabColors.textColorProperty }));
       detectorLayer.children = children;
     };
 
     const trackShape = (scale: RadialScale, track: Track, phi0: number, stopRadius: number): Shape => {
       const shape = new Shape();
       const end = track.exitAngle ?? Math.PI;
-      const steps = Math.max(12, Math.ceil(end * 40));
+      const steps = Math.max(DETECTOR_VIEW.MIN_TRACK_STEPS, Math.ceil(end * DETECTOR_VIEW.TRACK_STEPS_PER_RADIAN));
       for (let i = 0; i <= steps; i++) {
         const p = toScreen(scale, pointOnTrack(track, (end * i) / steps));
         if (i === 0) {
@@ -133,7 +148,7 @@ export class DetectorNode extends Node {
         // Straight on from the tracker edge to where the particle stops.
         const exit = pointOnTrack(track, track.exitAngle);
         const phi = directionOnTrack(phi0, track.charge, track.exitAngle);
-        for (let r = TRACKER_RADIUS; r <= stopRadius; r += 0.05) {
+        for (let r = TRACKER_RADIUS; r <= stopRadius; r += DETECTOR_VIEW.STRAIGHT_RADIAL_STEP) {
           const t = r - TRACKER_RADIUS;
           shape.lineToPoint(toScreen(scale, { x: exit.x + t * Math.cos(phi), y: exit.y + t * Math.sin(phi) }));
         }
@@ -150,8 +165,14 @@ export class DetectorNode extends Node {
       const deposits: Node[] = [];
       for (const deposit of event.deposits) {
         const [inner, outer] = deposit.layer === "ecal" ? [ECAL_INNER, ECAL_OUTER] : [HCAL_INNER, HCAL_OUTER];
-        const depth = inner + (outer - inner) * Math.min(1, 0.25 + Math.log10(1 + deposit.energy) / 2.2);
-        const half = 0.05;
+        const depth =
+          inner +
+          (outer - inner) *
+            Math.min(
+              1,
+              DETECTOR_VIEW.DEPOSIT_DEPTH_BASE + Math.log10(1 + deposit.energy) / DETECTOR_VIEW.DEPOSIT_DEPTH_LOG_SCALE,
+            );
+        const half = DETECTOR_VIEW.DEPOSIT_HALF_PHI;
         const corner = (r: number, a: number) => toScreen(scale, { x: r * Math.cos(a), y: r * Math.sin(a) });
         deposits.push(
           new Path(
@@ -172,7 +193,12 @@ export class DetectorNode extends Node {
       }
       for (const muon of event.muonHits) {
         for (const p of muon.points) {
-          deposits.push(new Circle(4, { fill: ColliderLabColors.muonHitColorProperty, center: toScreen(scale, p) }));
+          deposits.push(
+            new Circle(DETECTOR_VIEW.MUON_HIT_RADIUS, {
+              fill: ColliderLabColors.muonHitColorProperty,
+              center: toScreen(scale, p),
+            }),
+          );
         }
       }
       depositLayer.children = deposits;
@@ -189,21 +215,21 @@ export class DetectorNode extends Node {
           particle?.kind === "muon"
             ? DETECTOR_RADIUS
             : particle?.kind === "electron"
-              ? ECAL_INNER + 0.1
-              : HCAL_INNER + 0.2;
+              ? ECAL_INNER + DETECTOR_VIEW.ELECTRON_STOP_PAST_ECAL
+              : HCAL_INNER + DETECTOR_VIEW.HADRON_STOP_PAST_HCAL;
         const shape = trackShape(scale, track, particle?.phi ?? 0, zoomed ? TRACKER_RADIUS : stop);
         const isSelected = selected === index;
         const path = new Path(shape, {
           stroke: isSelected ? ColliderLabColors.selectedTrackColorProperty : ColliderLabColors.trackColorProperty,
-          lineWidth: isSelected ? 2.5 : 1.5,
+          lineWidth: isSelected ? DETECTOR_VIEW.SELECTED_TRACK_WIDTH : DETECTOR_VIEW.TRACK_WIDTH,
           cursor: "pointer",
         });
-        path.mouseArea = shape.getStrokedShape(new LineStyles({ lineWidth: 12 }));
+        path.mouseArea = shape.getStrokedShape(new LineStyles({ lineWidth: DETECTOR_VIEW.HIT_AREA_WIDTH }));
         path.touchArea = path.mouseArea;
         path.addInputListener({ down: () => model.selectTrack(index) });
         const hits = track.hits.map(
           (h) =>
-            new Circle(isSelected ? 2.6 : 1.8, {
+            new Circle(isSelected ? DETECTOR_VIEW.SELECTED_HIT_RADIUS : DETECTOR_VIEW.HIT_RADIUS, {
               fill: isSelected ? ColliderLabColors.selectedTrackColorProperty : ColliderLabColors.accentColorProperty,
               center: toScreen(scale, h),
               pickable: false,
@@ -224,8 +250,8 @@ export class DetectorNode extends Node {
         // Only the part of the fitted circle inside the tracker is drawn.
         const circle = new Shape();
         let previousInside = false;
-        for (let i = 0; i <= 720; i++) {
-          const a = (2 * Math.PI * i) / 720;
+        for (let i = 0; i <= DETECTOR_VIEW.FIT_CIRCLE_SAMPLES; i++) {
+          const a = (2 * Math.PI * i) / DETECTOR_VIEW.FIT_CIRCLE_SAMPLES;
           const p = { x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) };
           const inside = Math.hypot(p.x, p.y) <= TRACKER_RADIUS;
           if (inside) {
@@ -241,8 +267,8 @@ export class DetectorNode extends Node {
         overlays.push(
           new Path(circle, {
             stroke: ColliderLabColors.fitCurveColorProperty,
-            lineDash: [5, 4],
-            lineWidth: 1.5,
+            lineDash: [...DETECTOR_VIEW.FIT_DASH],
+            lineWidth: DETECTOR_VIEW.FIT_LINE_WIDTH,
             pickable: false,
           }),
         );
@@ -257,7 +283,7 @@ export class DetectorNode extends Node {
               lineWidth: 1,
               pickable: false,
             }),
-            new Circle(4, {
+            new Circle(DETECTOR_VIEW.MARKER_RADIUS, {
               stroke: ColliderLabColors.fitCurveColorProperty,
               center: toScreen(scale, middle),
               pickable: false,
@@ -271,11 +297,11 @@ export class DetectorNode extends Node {
         overlays.push(
           new Line(0, 0, v.x, v.y, {
             stroke: ColliderLabColors.textColorProperty,
-            lineDash: [2, 3],
-            opacity: 0.7,
+            lineDash: [...DETECTOR_VIEW.FLIGHT_DASH],
+            opacity: DETECTOR_VIEW.FLIGHT_OPACITY,
             pickable: false,
           }),
-          new Circle(4, {
+          new Circle(DETECTOR_VIEW.MARKER_RADIUS, {
             stroke: ColliderLabColors.selectedTrackColorProperty,
             lineWidth: 2,
             center: v,
@@ -290,24 +316,29 @@ export class DetectorNode extends Node {
       // Missing-pT arrow.
       const missing = event.missingPt;
       const missingPt = Math.hypot(missing.x, missing.y);
-      if (model.showMissingPtProperty.value && missingPt > 3) {
-        const length = Math.min(outerPixels * 0.9, missingPt * MISSING_PT_PIXELS_PER_GEV);
+      if (model.showMissingPtProperty.value && missingPt > DETECTOR_VIEW.MISSING_PT_THRESHOLD) {
+        const length = Math.min(
+          outerPixels * DETECTOR_VIEW.MISSING_PT_MAX_LENGTH_FRACTION,
+          missingPt * DETECTOR_VIEW.MISSING_PT_PIXELS_PER_GEV,
+        );
         const tip = new Vector2(missing.x, -missing.y).normalized().timesScalar(length);
         const arrow = new ArrowNode(0, 0, tip.x, tip.y, {
           fill: ColliderLabColors.missingPtColorProperty,
           stroke: null,
-          tailWidth: 3,
-          headWidth: 12,
-          headHeight: 12,
-          opacity: 0.9,
+          tailWidth: DETECTOR_VIEW.ARROW_TAIL_WIDTH,
+          headWidth: DETECTOR_VIEW.ARROW_HEAD_WIDTH,
+          headHeight: DETECTOR_VIEW.ARROW_HEAD_HEIGHT,
+          opacity: DETECTOR_VIEW.ARROW_OPACITY,
           pickable: false,
         });
         const label = new Text(
           strings.missingPtPatternStringProperty.value.replace("{{value}}", missingPt.toFixed(0)),
           {
-            font: "bold 12px sans-serif",
+            font: FONTS.MISSING_PT,
             fill: ColliderLabColors.missingPtColorProperty,
-            center: tip.timesScalar(1.08).plusXY(0, -10),
+            center: tip
+              .timesScalar(DETECTOR_VIEW.MISSING_PT_LABEL_TIP_FACTOR)
+              .plusXY(0, DETECTOR_VIEW.MISSING_PT_LABEL_Y_OFFSET),
           },
         );
         missingLayer.children = [arrow, label];
@@ -321,12 +352,12 @@ export class DetectorNode extends Node {
       const labels: Node[] = [];
       for (const particle of event.particles) {
         const reach = zoomed
-          ? TRACKER_RADIUS * 0.85
+          ? TRACKER_RADIUS * DETECTOR_VIEW.ZOOMED_LABEL_REACH_FRACTION
           : particle.kind === "muon"
-            ? 3.0
+            ? DETECTOR_VIEW.MUON_LABEL_REACH
             : particle.kind === "neutrino"
-              ? 2.2
-              : 1.15;
+              ? DETECTOR_VIEW.NEUTRINO_LABEL_REACH
+              : DETECTOR_VIEW.OTHER_LABEL_REACH;
         const track = event.tracks.find((t) => t.particleId === particle.id);
         let p: Point;
         if (track && track.exitAngle !== null) {
@@ -334,7 +365,7 @@ export class DetectorNode extends Node {
           const phi = directionOnTrack(particle.phi, particle.charge, track.exitAngle);
           const extra = Math.max(0, reach - TRACKER_RADIUS);
           p = zoomed
-            ? pointOnTrack(track, track.exitAngle * 0.85)
+            ? pointOnTrack(track, track.exitAngle * DETECTOR_VIEW.ZOOMED_LABEL_REACH_FRACTION)
             : { x: exit.x + extra * Math.cos(phi), y: exit.y + extra * Math.sin(phi) };
         } else {
           p = {
@@ -343,7 +374,7 @@ export class DetectorNode extends Node {
           };
         }
         const text = new RichText(particle.symbol, {
-          font: "bold 16px serif",
+          font: FONTS.TRUTH_LABEL,
           fill:
             particle.kind === "neutrino"
               ? ColliderLabColors.missingPtColorProperty

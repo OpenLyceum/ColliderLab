@@ -11,14 +11,13 @@ import { HBox, Text, VBox } from "scenerystack/scenery";
 import { NumberControl } from "scenerystack/scenery-phet";
 import { RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { BUMP_HUNT, BUMP_HUNT_LAYOUT, FONTS, Z_FIT } from "../../ColliderLabConstants.js";
 import { FLAT_PANEL_PUSH_BUTTON_OPTIONS, LIGHT_SURFACE_TEXT_FILL } from "../../common/ColliderLabButtonOptions.js";
 import { COLLIDER_LAB_NUMBER_CONTROL_OPTIONS } from "../../common/ColliderLabControlOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import { type BumpHuntModel, RESOLUTION_RANGE } from "../model/BumpHuntModel.js";
 import { PDG_Z_MASS_GEV, PDG_Z_WIDTH_GEV } from "../model/zFit.js";
-
-const FONT = "13px sans-serif";
 
 export class ZFitPanel extends ColliderLabPanel {
   public readonly resolutionControl: NumberControl;
@@ -27,9 +26,13 @@ export class ZFitPanel extends ColliderLabPanel {
   public constructor(model: BumpHuntModel, width: number) {
     const strings = StringManager.getInstance().getBumpHuntStrings();
     const a11y = StringManager.getInstance().getBumpHuntA11yStrings();
-    const textOptions = { font: FONT, fill: ColliderLabColors.textColorProperty, maxWidth: width - 10 };
+    const textOptions = {
+      font: FONTS.PANEL,
+      fill: ColliderLabColors.textColorProperty,
+      maxWidth: width - BUMP_HUNT_LAYOUT.FIT_CONTENT_INSET,
+    };
 
-    const title = new Text(strings.fitTitleStringProperty, { ...textOptions, font: `bold ${FONT}` });
+    const title = new Text(strings.fitTitleStringProperty, { ...textOptions, font: FONTS.PANEL_BOLD });
 
     const resolutionControl = new NumberControl(
       strings.resolutionStringProperty,
@@ -37,8 +40,8 @@ export class ZFitPanel extends ColliderLabPanel {
       RESOLUTION_RANGE,
       {
         ...COLLIDER_LAB_NUMBER_CONTROL_OPTIONS,
-        delta: 0.1,
-        titleNodeOptions: { ...textOptions, maxWidth: width - 20 },
+        delta: BUMP_HUNT.RESOLUTION_DELTA,
+        titleNodeOptions: { ...textOptions, maxWidth: width - BUMP_HUNT_LAYOUT.FIT_LABEL_INSET },
         numberDisplayOptions: {
           decimalPlaces: 1,
           valuePattern: `{{value}} ${strings.gevUnitStringProperty.value}`,
@@ -49,7 +52,7 @@ export class ZFitPanel extends ColliderLabPanel {
 
     const fitButton = new RectangularPushButton({
       ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-      content: new Text(strings.fitZStringProperty, { font: FONT, fill: LIGHT_SURFACE_TEXT_FILL }),
+      content: new Text(strings.fitZStringProperty, { font: FONTS.PANEL, fill: LIGHT_SURFACE_TEXT_FILL }),
       listener: () => {
         model.viewRangeProperty.value = "z";
         model.fitZ();
@@ -63,7 +66,7 @@ export class ZFitPanel extends ColliderLabPanel {
     const massError = pick((r) => r.massError.toFixed(2));
     const widthValue = pick((r) => r.width.toFixed(2));
     const widthError = pick((r) => r.widthError.toFixed(2));
-    const lifetimeValue = pick((r) => (r.lifetime / 1e-25).toFixed(1));
+    const lifetimeValue = pick((r) => (r.lifetime / Z_FIT.DISPLAY_LIFETIME_SCALE).toFixed(1));
 
     const massText = new Text(
       new PatternStringProperty(strings.fitMassPatternStringProperty, { value: massValue, error: massError }),
@@ -75,18 +78,18 @@ export class ZFitPanel extends ColliderLabPanel {
     );
     const lifetimeText = new Text(
       new PatternStringProperty(strings.fitLifetimePatternStringProperty, { value: lifetimeValue }),
-      { ...textOptions, font: `bold ${FONT}`, fill: ColliderLabColors.fitCurveColorProperty },
+      { ...textOptions, font: FONTS.PANEL_BOLD, fill: ColliderLabColors.fitCurveColorProperty },
     );
     const pdgText = new Text(
       new PatternStringProperty(strings.fitPdgPatternStringProperty, {
         mass: PDG_Z_MASS_GEV.toFixed(2),
         width: PDG_Z_WIDTH_GEV.toFixed(2),
       }),
-      { ...textOptions, font: "11px sans-serif", opacity: 0.8 },
+      { ...textOptions, font: FONTS.CREDIT, opacity: BUMP_HUNT_LAYOUT.PDG_OPACITY },
     );
     const tooFewText = new Text(strings.fitTooFewStringProperty, {
       ...textOptions,
-      font: "12px sans-serif",
+      font: FONTS.TICK,
       maxWidth: width - 90,
     });
 
@@ -108,7 +111,12 @@ export class ZFitPanel extends ColliderLabPanel {
       new VBox({
         spacing: 6,
         align: "left",
-        children: [title, resolutionControl, new HBox({ spacing: 12, children: [fitButton, tooFewText] }), results],
+        children: [
+          title,
+          resolutionControl,
+          new HBox({ spacing: BUMP_HUNT_LAYOUT.STREAM_TITLE_SPACING, children: [fitButton, tooFewText] }),
+          results,
+        ],
       }),
       { minWidth: width, maxWidth: width },
     );

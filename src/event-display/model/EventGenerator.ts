@@ -23,6 +23,7 @@
  *   neutrino       nothing (shows up only as missing pT)
  */
 
+import { SPEED_OF_LIGHT as C, EVENT_GEN, K_SHORT, MASS } from "../../ColliderLabConstants.js";
 import { FourVector } from "../../common/model/FourVector.js";
 import type { SeededRandom } from "../../common/model/random.js";
 import type { Point } from "./circleFit.js";
@@ -42,14 +43,12 @@ export type Process = (typeof PROCESSES)[number];
 export const KINDS = ["electron", "photon", "muon", "chargedHadron", "neutralHadron", "neutrino"] as const;
 export type ParticleKind = (typeof KINDS)[number];
 
-/** Masses, GeV/c² (PDG). */
-const MASS = { muon: 0.10566, electron: 0.000511, pion: 0.13957, pi0: 0.13498, kShort: 0.497611, z: 91.188, w: 80.369 };
 /** K⁰_S mean decay length cτ, m (PDG: 2.684 cm). */
-export const K_SHORT_C_TAU = 0.02684;
-export const K_SHORT_MASS = MASS.kShort;
-export const K_SHORT_LIFETIME = 0.8954e-10; // s
+export const K_SHORT_C_TAU = K_SHORT.C_TAU;
+export const K_SHORT_MASS = MASS.K_SHORT;
+export const K_SHORT_LIFETIME = K_SHORT.LIFETIME;
 /** Speed of light, m/s. */
-export const SPEED_OF_LIGHT = 2.99792458e8;
+export const SPEED_OF_LIGHT = C;
 
 export type TrueParticle = {
   readonly id: number;
@@ -169,7 +168,7 @@ export function angleToRadius(
     // Turning angle measured in the direction of travel (clockwise for q > 0).
     let alpha = -track.charge * (pointAngle - startAngle);
     alpha = ((alpha % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-    if (alpha > 1e-9 && (best === null || alpha < best)) {
+    if (alpha > EVENT_GEN.ANGLE_EPSILON && (best === null || alpha < best)) {
       best = alpha;
     }
   }
@@ -206,11 +205,11 @@ function buildTrack(random: SeededRandom, particle: TrueParticle, bField: number
   const startRadius = Math.hypot(particle.origin.x, particle.origin.y);
   const hits: Point[] = [];
   for (const layer of TRACKER_LAYERS) {
-    if (layer <= startRadius + 0.005) {
+    if (layer <= startRadius + EVENT_GEN.LAYER_SKIP_MARGIN) {
       continue;
     }
     const alpha = angleToRadius(base, layer);
-    if (alpha === null || alpha > Math.PI) {
+    if (alpha === null || alpha > EVENT_GEN.MAX_EXIT_ANGLE) {
       break;
     }
     const exact = pointOnTrack(base, alpha);
@@ -220,7 +219,7 @@ function buildTrack(random: SeededRandom, particle: TrueParticle, bField: number
     hits.push({ x: layer * Math.cos(angle), y: layer * Math.sin(angle) });
   }
   const exit = angleToRadius(base, TRACKER_RADIUS);
-  return { ...base, exitAngle: exit !== null && exit <= Math.PI ? exit : null, hits };
+  return { ...base, exitAngle: exit !== null && exit <= EVENT_GEN.MAX_EXIT_ANGLE ? exit : null, hits };
 }
 
 /** Position and direction where a particle leaves the tracker volume. */
@@ -294,8 +293,8 @@ export function simulateDetector(
     }
   }
   // Detector resolution on the visible momentum balance.
-  missingX += random.gaussian(0, 0.8);
-  missingY += random.gaussian(0, 0.8);
+  missingX += random.gaussian(0, EVENT_GEN.MISSING_PT_SMEAR);
+  missingY += random.gaussian(0, EVENT_GEN.MISSING_PT_SMEAR);
   return { process, particles, tracks, deposits, muonHits, missingPt: { x: missingX, y: missingY }, displacedVertex };
 }
 
@@ -304,7 +303,10 @@ export function simulateDetector(
 const azimuth = (v: FourVector) => Math.atan2(v.py, v.px);
 
 export function generateEvent(random: SeededRandom, process: Process, bField: number): DetectorEvent {
-  const origin = { x: random.gaussian(0, 0.0005), y: random.gaussian(0, 0.0005) };
+  const origin = {
+    x: random.gaussian(0, EVENT_GEN.BEAM_SPOT_SIGMA),
+    y: random.gaussian(0, EVENT_GEN.BEAM_SPOT_SIGMA),
+  };
   const particles: TrueParticle[] = [];
   let displacedVertex: Point | null = null;
   const add = (symbol: string, kind: ParticleKind, charge: number, v: FourVector, from: Point = origin) =>
@@ -314,7 +316,7 @@ export function generateEvent(random: SeededRandom, process: Process, bField: nu
   // the collision; that recoil is drawn as one hadronic deposit so the
   // visible momentum balances and only neutrinos create missing pT.
   const addRecoil = (parent: FourVector) => {
-    if (parent.pt > 1) {
+    if (parent.pt > EVENT_GEN.RECOIL_PT_THRESHOLD) {
       particles.push({
         id: particles.length,
         symbol: "h",
@@ -329,26 +331,26 @@ export function generateEvent(random: SeededRandom, process: Process, bField: nu
   switch (process) {
     case "zToMuMu": {
       const z = parentVector(
-        random.breitWigner(MASS.z, 2.5, 80, 100),
-        Math.abs(random.gaussian(0, 4)),
+        random.breitWigner(MASS.Z, EVENT_GEN.Z_WIDTH, EVENT_GEN.Z_MASS_MIN, EVENT_GEN.Z_MASS_MAX),
+        Math.abs(random.gaussian(0, EVENT_GEN.VECTOR_BOSON_PT_SIGMA)),
         random.uniform(-Math.PI, Math.PI),
-        random.uniform(-1.2, 1.2),
+        random.uniform(-EVENT_GEN.VECTOR_BOSON_RAPIDITY, EVENT_GEN.VECTOR_BOSON_RAPIDITY),
       );
       addRecoil(z);
-      const [a, b] = twoBodyDecay(random, z, MASS.muon, MASS.muon);
+      const [a, b] = twoBodyDecay(random, z, MASS.MUON, MASS.MUON);
       add("μ⁻", "muon", -1, a);
       add("μ⁺", "muon", 1, b);
       break;
     }
     case "wToENu": {
       const w = parentVector(
-        random.breitWigner(MASS.w, 2.1, 65, 95),
-        Math.abs(random.gaussian(0, 4)),
+        random.breitWigner(MASS.W, EVENT_GEN.W_WIDTH, EVENT_GEN.W_MASS_MIN, EVENT_GEN.W_MASS_MAX),
+        Math.abs(random.gaussian(0, EVENT_GEN.VECTOR_BOSON_PT_SIGMA)),
         random.uniform(-Math.PI, Math.PI),
-        random.uniform(-1.2, 1.2),
+        random.uniform(-EVENT_GEN.VECTOR_BOSON_RAPIDITY, EVENT_GEN.VECTOR_BOSON_RAPIDITY),
       );
       addRecoil(w);
-      const [e, nu] = twoBodyDecay(random, w, MASS.electron, 0);
+      const [e, nu] = twoBodyDecay(random, w, MASS.ELECTRON, 0);
       const negative = random.next() < 0.5;
       add(negative ? "e⁻" : "e⁺", "electron", negative ? -1 : 1, e);
       add(negative ? "ν̄ₑ" : "νₑ", "neutrino", 0, nu);
@@ -356,10 +358,10 @@ export function generateEvent(random: SeededRandom, process: Process, bField: nu
     }
     case "pi0ToGammaGamma": {
       const pi0 = parentVector(
-        MASS.pi0,
-        random.uniform(1.5, 5),
+        MASS.PI0,
+        random.uniform(EVENT_GEN.PI0_PT_MIN, EVENT_GEN.PI0_PT_MAX),
         random.uniform(-Math.PI, Math.PI),
-        random.uniform(-1, 1),
+        random.uniform(-EVENT_GEN.PI0_RAPIDITY, EVENT_GEN.PI0_RAPIDITY),
       );
       addRecoil(pi0);
       const [g1, g2] = twoBodyDecay(random, pi0, 0, 0);
@@ -369,17 +371,22 @@ export function generateEvent(random: SeededRandom, process: Process, bField: nu
     }
     case "kShortToPiPi": {
       for (;;) {
-        const pt = random.uniform(1, 5);
+        const pt = random.uniform(EVENT_GEN.K_SHORT_PT_MIN, EVENT_GEN.K_SHORT_PT_MAX);
         const phi = random.uniform(-Math.PI, Math.PI);
         // Transverse decay length: (pT / m) · cτ · (exponential proper time).
-        const length = (pt / MASS.kShort) * random.exponential(K_SHORT_C_TAU);
-        if (length < 0.03 || length > 0.6) {
+        const length = (pt / MASS.K_SHORT) * random.exponential(K_SHORT_C_TAU);
+        if (length < K_SHORT.MIN_FLIGHT_LENGTH || length > K_SHORT.MAX_FLIGHT_LENGTH) {
           continue;
         }
         displacedVertex = { x: origin.x + length * Math.cos(phi), y: origin.y + length * Math.sin(phi) };
-        const kaon = parentVector(MASS.kShort, pt, phi, random.uniform(-1, 1));
+        const kaon = parentVector(
+          MASS.K_SHORT,
+          pt,
+          phi,
+          random.uniform(-EVENT_GEN.K_SHORT_RAPIDITY, EVENT_GEN.K_SHORT_RAPIDITY),
+        );
         addRecoil(kaon);
-        const [plus, minus] = twoBodyDecay(random, kaon, MASS.pion, MASS.pion);
+        const [plus, minus] = twoBodyDecay(random, kaon, MASS.PION, MASS.PION);
         add("π⁺", "chargedHadron", 1, plus, displacedVertex);
         add("π⁻", "chargedHadron", -1, minus, displacedVertex);
         break;

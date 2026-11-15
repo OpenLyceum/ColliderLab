@@ -8,6 +8,7 @@ import { Multilink, PatternStringProperty } from "scenerystack/axon";
 import { GridBox, RichText, Text, VBox } from "scenerystack/scenery";
 import { RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { EVENT_DISPLAY_LAYOUT, FONTS } from "../../ColliderLabConstants.js";
 import { FLAT_PANEL_PUSH_BUTTON_OPTIONS, LIGHT_SURFACE_TEXT_FILL } from "../../common/ColliderLabButtonOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
@@ -22,34 +23,37 @@ export class GamePanel extends ColliderLabPanel {
     const strings = StringManager.getInstance().getEventDisplayStrings();
     const a11y = StringManager.getInstance().getEventDisplayA11yStrings();
     const prompt = new Text(strings.gamePromptStringProperty, {
-      font: "bold 14px sans-serif",
+      font: FONTS.GAME_PROMPT,
       fill: ColliderLabColors.textColorProperty,
-      maxWidth: width - 20,
+      maxWidth: width - EVENT_DISPLAY_LAYOUT.PANEL_CONTENT_INSET,
     });
 
     const answers = PROCESSES.map(
       (process) =>
         new RectangularPushButton({
           ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-          minWidth: (width - 40) / 2,
-          content: new RichText(processLabel(process), { font: "15px serif", fill: LIGHT_SURFACE_TEXT_FILL }),
+          minWidth: (width - EVENT_DISPLAY_LAYOUT.BUTTON_WIDTH_INSET) / 2,
+          content: new RichText(processLabel(process), { font: FONTS.GAME_ANSWER, fill: LIGHT_SURFACE_TEXT_FILL }),
           listener: () => model.guess(process),
           accessibleName: new PatternStringProperty(a11y.controls.guessPatternStringProperty, {
             process: processLabel(process),
           }),
         }),
     );
-    const feedback = new RichText("", { font: "bold 14px sans-serif", lineWrap: width - 20 });
+    const feedback = new RichText("", {
+      font: FONTS.SANS_14_BOLD,
+      lineWrap: width - EVENT_DISPLAY_LAYOUT.PANEL_CONTENT_INSET,
+    });
     const score = new Text(
       new PatternStringProperty(strings.scorePatternStringProperty, {
         score: model.scoreProperty,
         rounds: model.roundsProperty,
       }),
-      { font: "14px sans-serif", fill: ColliderLabColors.textColorProperty },
+      { font: FONTS.SANS_14, fill: ColliderLabColors.textColorProperty },
     );
     const nextButton = new RectangularPushButton({
       ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-      content: new Text(strings.nextRoundStringProperty, { font: "14px sans-serif", fill: LIGHT_SURFACE_TEXT_FILL }),
+      content: new Text(strings.nextRoundStringProperty, { font: FONTS.SANS_14, fill: LIGHT_SURFACE_TEXT_FILL }),
       listener: () => model.newRound(),
       accessibleName: a11y.controls.nextRoundStringProperty,
     });
@@ -69,11 +73,15 @@ export class GamePanel extends ColliderLabPanel {
 
     super(
       new VBox({
-        spacing: 8,
+        spacing: EVENT_DISPLAY_LAYOUT.GAME_PANEL_SPACING,
         align: "left",
         children: [
           prompt,
-          new GridBox({ rows: [answers.slice(0, 2), answers.slice(2)], xSpacing: 8, ySpacing: 8 }),
+          new GridBox({
+            rows: [answers.slice(0, 2), answers.slice(2)],
+            xSpacing: EVENT_DISPLAY_LAYOUT.GAME_GRID_SPACING,
+            ySpacing: EVENT_DISPLAY_LAYOUT.GAME_GRID_SPACING,
+          }),
           feedback,
           score,
           nextButton,

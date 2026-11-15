@@ -10,13 +10,13 @@ import { DerivedProperty, PatternStringProperty } from "scenerystack/axon";
 import { GridBox, HBox, type Node, Text, VBox } from "scenerystack/scenery";
 import { RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { BUMP_HUNT_LAYOUT, FONTS } from "../../ColliderLabConstants.js";
 import { FLAT_PANEL_PUSH_BUTTON_OPTIONS, LIGHT_SURFACE_TEXT_FILL } from "../../common/ColliderLabButtonOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import type { FourVector } from "../../common/model/FourVector.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { BumpHuntModel } from "../model/BumpHuntModel.js";
 
-const FONT = "13px sans-serif";
 const MONO = "13px monospace";
 
 export class PairCalculatorPanel extends ColliderLabPanel {
@@ -29,10 +29,14 @@ export class PairCalculatorPanel extends ColliderLabPanel {
 
     const cell = (text: string | Text, bold = false): Node =>
       typeof text === "string"
-        ? new Text(text, { font: bold ? `bold ${FONT}` : MONO, fill: ColliderLabColors.textColorProperty })
+        ? new Text(text, { font: bold ? FONTS.PANEL_BOLD : MONO, fill: ColliderLabColors.textColorProperty })
         : text;
 
-    const grid = new GridBox({ xSpacing: 10, ySpacing: 3, xAlign: "right" });
+    const grid = new GridBox({
+      xSpacing: BUMP_HUNT_LAYOUT.PAIR_GRID_X_SPACING,
+      ySpacing: BUMP_HUNT_LAYOUT.PAIR_GRID_Y_SPACING,
+      xAlign: "right",
+    });
 
     const sumProperty = new DerivedProperty([model.currentEventProperty], (event) => {
       if (!event) {
@@ -51,7 +55,7 @@ export class PairCalculatorPanel extends ColliderLabPanel {
       const rows: Node[][] = [header.map((h) => cell(h, true))];
       const row = (label: string, v: FourVector | null, charge: string, fill = ColliderLabColors.textColorProperty) => {
         rows.push([
-          new Text(label, { font: `bold ${FONT}`, fill }),
+          new Text(label, { font: FONTS.PANEL_BOLD, fill }),
           ...(v ? [v.energy, v.px, v.py, v.pz].map((n) => cell(fixed(n))) : [cell("—"), cell(""), cell(""), cell("")]),
           new Text(charge, { font: MONO, fill }),
         ]);
@@ -74,10 +78,10 @@ export class PairCalculatorPanel extends ColliderLabPanel {
 
     const massSquaredText = new Text(
       new PatternStringProperty(strings.massSquaredPatternStringProperty, { value: massSquaredProperty }),
-      { font: FONT, fill: ColliderLabColors.textColorProperty, maxWidth: width },
+      { font: FONTS.PANEL, fill: ColliderLabColors.textColorProperty, maxWidth: width },
     );
     const massText = new Text(new PatternStringProperty(strings.massPatternStringProperty, { value: massProperty }), {
-      font: "bold 16px sans-serif",
+      font: FONTS.PAIR_MASS,
       fill: ColliderLabColors.accentColorProperty,
       maxWidth: width,
     });
@@ -89,7 +93,11 @@ export class PairCalculatorPanel extends ColliderLabPanel {
     ) =>
       new RectangularPushButton({
         ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-        content: new Text(label, { font: FONT, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: width / 2 - 20 }),
+        content: new Text(label, {
+          font: FONTS.PANEL,
+          fill: LIGHT_SURFACE_TEXT_FILL,
+          maxWidth: width / 2 - BUMP_HUNT_LAYOUT.PAIR_BUTTON_INSET,
+        }),
         listener,
         accessibleName,
       });
@@ -105,9 +113,17 @@ export class PairCalculatorPanel extends ColliderLabPanel {
 
     super(
       new VBox({
-        spacing: 8,
+        spacing: BUMP_HUNT_LAYOUT.PAIR_PANEL_SPACING,
         align: "left",
-        children: [grid, massSquaredText, massText, new HBox({ spacing: 10, children: [addButton, nextButton] })],
+        children: [
+          grid,
+          massSquaredText,
+          massText,
+          new HBox({
+            spacing: BUMP_HUNT_LAYOUT.PAIR_GRID_X_SPACING,
+            children: [addButton, nextButton],
+          }),
+        ],
       }),
       { minWidth: width, maxWidth: width },
     );

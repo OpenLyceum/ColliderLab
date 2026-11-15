@@ -15,13 +15,11 @@ import { Multilink } from "scenerystack/axon";
 import { Shape } from "scenerystack/kite";
 import { Line, Node, Path, Rectangle, Text } from "scenerystack/scenery";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { FONTS, MASS_SPECTRUM_CHART } from "../../ColliderLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { BumpHuntModel } from "../model/BumpHuntModel.js";
 import { RESONANCES } from "../model/dimuonSpectrum.js";
 import type { MassHistogram } from "../model/MassHistogram.js";
-
-const TICK_FONT = "12px sans-serif";
-const LABEL_FONT = "13px sans-serif";
 
 type Axis = {
   readonly min: number;
@@ -96,29 +94,32 @@ export class MassSpectrumChartNode extends Node {
     });
     this.barsPath = new Path(null, {
       fill: ColliderLabColors.histogramFillColorProperty,
-      opacity: 0.85,
+      opacity: MASS_SPECTRUM_CHART.BAR_OPACITY,
     });
-    this.fitPath = new Path(null, { stroke: ColliderLabColors.fitCurveColorProperty, lineWidth: 2.5 });
+    this.fitPath = new Path(null, {
+      stroke: ColliderLabColors.fitCurveColorProperty,
+      lineWidth: MASS_SPECTRUM_CHART.FIT_LINE_WIDTH,
+    });
 
     const clip = Shape.rect(0, 0, chartWidth, chartHeight);
     const plotLayer = new Node({ children: [this.barsPath, this.fitPath], clipArea: clip });
 
     const xLabel = new Text(strings.xAxisStringProperty, {
-      font: LABEL_FONT,
+      font: FONTS.AXIS,
       fill: ColliderLabColors.textColorProperty,
       maxWidth: chartWidth,
     });
     const yLabel = new Text(strings.yAxisStringProperty, {
-      font: LABEL_FONT,
+      font: FONTS.AXIS,
       fill: ColliderLabColors.textColorProperty,
       rotation: -Math.PI / 2,
       maxWidth: chartHeight,
     });
     const placeAxisLabels = (): void => {
       xLabel.centerX = chartWidth / 2;
-      xLabel.top = chartHeight + 22;
+      xLabel.top = chartHeight + MASS_SPECTRUM_CHART.X_AXIS_OFFSET;
       yLabel.centerY = chartHeight / 2;
-      yLabel.right = -38;
+      yLabel.right = MASS_SPECTRUM_CHART.Y_AXIS_OFFSET;
     };
     xLabel.boundsProperty.link(placeAxisLabels);
     yLabel.boundsProperty.link(placeAxisLabels);
@@ -145,8 +146,12 @@ export class MassSpectrumChartNode extends Node {
     const xAxis: Axis = { min: histogram.minimum, max: histogram.maximum, log: isLog };
     const peak = Math.max(1, histogram.maximumCount);
     const yAxis: Axis = isLog
-      ? { min: 0.5, max: 10 ** Math.ceil(Math.log10(peak * 1.5)), log: true }
-      : { min: 0, max: peak * 1.15, log: false };
+      ? {
+          min: MASS_SPECTRUM_CHART.LOG_Y_FLOOR,
+          max: 10 ** Math.ceil(Math.log10(peak * MASS_SPECTRUM_CHART.LOG_Y_HEADROOM)),
+          log: true,
+        }
+      : { min: 0, max: peak * MASS_SPECTRUM_CHART.LINEAR_Y_HEADROOM, log: false };
 
     const x = (m: number): number => toUnit(xAxis, m) * this.chartWidth;
     const y = (n: number): number => {
@@ -171,7 +176,7 @@ export class MassSpectrumChartNode extends Node {
     const fit = this.model.fitResultProperty.value;
     if (fit && !isLog) {
       const curve = new Shape();
-      for (let m = histogram.minimum; m <= histogram.maximum; m += 0.1) {
+      for (let m = histogram.minimum; m <= histogram.maximum; m += MASS_SPECTRUM_CHART.FIT_MASS_STEP) {
         const py = y(fit.model(m));
         m === histogram.minimum ? curve.moveTo(x(m), py) : curve.lineTo(x(m), py);
       }
@@ -193,10 +198,10 @@ export class MassSpectrumChartNode extends Node {
         if (label) {
           gridChildren.push(
             new Text(formatTick(value), {
-              font: TICK_FONT,
+              font: FONTS.TICK,
               fill: ColliderLabColors.textColorProperty,
               centerX: px,
-              top: this.chartHeight + 4,
+              top: this.chartHeight + MASS_SPECTRUM_CHART.TICK_LABEL_OFFSET,
             }),
           );
         }
@@ -206,9 +211,9 @@ export class MassSpectrumChartNode extends Node {
         if (label) {
           gridChildren.push(
             new Text(formatTick(value), {
-              font: TICK_FONT,
+              font: FONTS.TICK,
               fill: ColliderLabColors.textColorProperty,
-              right: -4,
+              right: -MASS_SPECTRUM_CHART.TICK_LABEL_OFFSET,
               centerY: py,
             }),
           );
@@ -216,7 +221,10 @@ export class MassSpectrumChartNode extends Node {
       }
     };
     const ticksFor = (axis: Axis, horizontal: boolean): void => {
-      for (const { value, labelled } of tickValues(axis, horizontal ? 6 : 5)) {
+      for (const { value, labelled } of tickValues(
+        axis,
+        horizontal ? MASS_SPECTRUM_CHART.TARGET_X_TICKS : MASS_SPECTRUM_CHART.TARGET_Y_TICKS,
+      )) {
         tick(value, horizontal, horizontal || labelled);
       }
     };
@@ -236,23 +244,23 @@ export class MassSpectrumChartNode extends Node {
         }
         const px = x(resonance.mass);
         const text = new Text(resonance.symbol, {
-          font: "bold 13px sans-serif",
+          font: FONTS.RESONANCE_LABEL,
           fill: ColliderLabColors.resonanceLabelColorProperty,
-          opacity: resonance.clearPeak ? 1 : 0.55,
+          opacity: resonance.clearPeak ? 1 : MASS_SPECTRUM_CHART.LABEL_OPACITY,
         });
         const left = px - text.width / 2;
-        let row = rowRight.findIndex((right) => left > right + 4);
+        let row = rowRight.findIndex((right) => left > right + MASS_SPECTRUM_CHART.LABEL_PACK_GAP);
         if (row < 0) {
           row = rowRight.length;
         }
         rowRight[row] = px + text.width / 2;
         text.centerX = px;
-        text.top = 6 + row * 16;
+        text.top = 6 + row * MASS_SPECTRUM_CHART.LABEL_ROW_HEIGHT;
         labels.push(
           new Line(px, text.bottom + 2, px, this.chartHeight, {
             stroke: ColliderLabColors.resonanceLabelColorProperty,
-            lineDash: [3, 4],
-            opacity: 0.5,
+            lineDash: [...MASS_SPECTRUM_CHART.LABEL_LINE_DASH],
+            opacity: MASS_SPECTRUM_CHART.UNCLEAR_PEAK_OPACITY,
           }),
           text,
         );

@@ -11,6 +11,7 @@ import { Vector2 } from "scenerystack/dot";
 import { Shape } from "scenerystack/kite";
 import { Circle, Line, Node, Path, Rectangle, RichText, Text } from "scenerystack/scenery";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { ENERGY_FRONTIER, ENERGY_FRONTIER_LAYOUT, FONTS } from "../../ColliderLabConstants.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import {
   ELECTRON_MASS,
@@ -24,7 +25,7 @@ import {
   THRESHOLDS,
 } from "../model/EnergyFrontierModel.js";
 
-const LOG_Y = { min: 0, max: 6 } as const; // √s from 1 GeV to 10⁶ GeV
+const LOG_Y = { min: ENERGY_FRONTIER.LOG_Y_MIN, max: ENERGY_FRONTIER.LOG_Y_MAX } as const;
 
 export class SqrtSChartNode extends Node {
   private readonly multilinks: { dispose(): void }[] = [];
@@ -38,17 +39,17 @@ export class SqrtSChartNode extends Node {
     });
     const layer = new Node();
     const xLabel = new Text(strings.xAxisStringProperty, {
-      font: "13px sans-serif",
+      font: FONTS.AXIS,
       fill: ColliderLabColors.textColorProperty,
       centerX: width / 2,
-      top: height + 22,
+      top: height + ENERGY_FRONTIER_LAYOUT.AXIS_OFFSET_BOTTOM,
     });
     const yLabel = new Text(strings.yAxisStringProperty, {
-      font: "13px sans-serif",
+      font: FONTS.AXIS,
       fill: ColliderLabColors.textColorProperty,
       rotation: -Math.PI / 2,
       centerY: height / 2,
-      right: -34,
+      right: ENERGY_FRONTIER_LAYOUT.AXIS_OFFSET_LEFT,
     });
     this.children = [frame, layer, xLabel, yLabel];
 
@@ -61,14 +62,14 @@ export class SqrtSChartNode extends Node {
         const mass = beam === "proton" ? PROTON_MASS : ELECTRON_MASS;
         const children: Node[] = [];
         // Grid and decade ticks.
-        for (let d = LOG_ENERGY_RANGE.min; d <= LOG_ENERGY_RANGE.max; d += 2) {
+        for (let d = LOG_ENERGY_RANGE.min; d <= LOG_ENERGY_RANGE.max; d += ENERGY_FRONTIER_LAYOUT.X_GRID_STEP) {
           children.push(
             new Line(x(10 ** d), 0, x(10 ** d), height, { stroke: ColliderLabColors.gridLineColorProperty }),
             new RichText(`10<sup>${d}</sup>`, {
-              font: "11px sans-serif",
+              font: FONTS.CREDIT,
               fill: ColliderLabColors.textColorProperty,
               centerX: x(10 ** d),
-              top: height + 4,
+              top: height + ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
             }),
           );
         }
@@ -76,9 +77,9 @@ export class SqrtSChartNode extends Node {
           children.push(
             new Line(0, y(10 ** d), width, y(10 ** d), { stroke: ColliderLabColors.gridLineColorProperty }),
             new RichText(`10<sup>${d}</sup>`, {
-              font: "11px sans-serif",
+              font: FONTS.CREDIT,
               fill: ColliderLabColors.textColorProperty,
-              right: -4,
+              right: -ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
               centerY: y(10 ** d),
             }),
           );
@@ -88,13 +89,13 @@ export class SqrtSChartNode extends Node {
           children.push(
             new Line(0, y(threshold.sqrtS), width, y(threshold.sqrtS), {
               stroke: ColliderLabColors.resonanceLabelColorProperty,
-              lineDash: [4, 5],
-              opacity: 0.55,
+              lineDash: [...ENERGY_FRONTIER_LAYOUT.THRESHOLD_DASH],
+              opacity: ENERGY_FRONTIER_LAYOUT.THRESHOLD_OPACITY,
             }),
             new Text(thresholdNames[`${threshold.id}StringProperty`]?.value ?? threshold.id, {
-              font: "11px sans-serif",
+              font: FONTS.CREDIT,
               fill: ColliderLabColors.resonanceLabelColorProperty,
-              right: width - 4,
+              right: width - ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
               bottom: y(threshold.sqrtS) - 1,
             }),
           );
@@ -103,7 +104,11 @@ export class SqrtSChartNode extends Node {
         const curve = (f: (e: number) => number) => {
           const shape = new Shape();
           let started = false;
-          for (let log = LOG_ENERGY_RANGE.min; log <= LOG_ENERGY_RANGE.max; log += 0.05) {
+          for (
+            let log = LOG_ENERGY_RANGE.min;
+            log <= LOG_ENERGY_RANGE.max;
+            log += ENERGY_FRONTIER_LAYOUT.CURVE_LOG_STEP
+          ) {
             const s = f(10 ** log);
             if (!inside(s)) {
               continue;
@@ -121,20 +126,28 @@ export class SqrtSChartNode extends Node {
         children.push(
           new Path(
             curve((energy) => sqrtSFixedTarget(mass, energy, PROTON_MASS)),
-            { stroke: ColliderLabColors.histogramFillColorProperty, lineWidth: 3 },
+            {
+              stroke: ColliderLabColors.histogramFillColorProperty,
+              lineWidth: ENERGY_FRONTIER_LAYOUT.CURVE_LINE_WIDTH,
+            },
           ),
-          new Path(curve(sqrtSCollider), { stroke: ColliderLabColors.fitCurveColorProperty, lineWidth: 3 }),
+          new Path(curve(sqrtSCollider), {
+            stroke: ColliderLabColors.fitCurveColorProperty,
+            lineWidth: ENERGY_FRONTIER_LAYOUT.CURVE_LINE_WIDTH,
+          }),
           new Text(strings.fixedCurveStringProperty, {
-            font: "bold 13px sans-serif",
+            font: FONTS.PANEL_BOLD,
             fill: ColliderLabColors.histogramFillColorProperty,
-            left: x(10 ** 8) + 6,
-            top: y(sqrtSFixedTarget(mass, 10 ** 8, PROTON_MASS)) + 6,
+            left: x(ENERGY_FRONTIER_LAYOUT.COLLIDER_LABEL_AT_ENERGY) + ENERGY_FRONTIER_LAYOUT.CURVE_LABEL_OFFSET,
+            top:
+              y(sqrtSFixedTarget(mass, ENERGY_FRONTIER_LAYOUT.COLLIDER_LABEL_AT_ENERGY, PROTON_MASS)) +
+              ENERGY_FRONTIER_LAYOUT.CURVE_LABEL_OFFSET,
           }),
           new Text(strings.colliderCurveStringProperty, {
-            font: "bold 13px sans-serif",
+            font: FONTS.PANEL_BOLD,
             fill: ColliderLabColors.fitCurveColorProperty,
-            right: x(10 ** 4) - 6,
-            bottom: y(sqrtSCollider(10 ** 4)) - 4,
+            right: x(ENERGY_FRONTIER_LAYOUT.FIXED_LABEL_AT_ENERGY) - ENERGY_FRONTIER_LAYOUT.CURVE_LABEL_OFFSET,
+            bottom: y(sqrtSCollider(ENERGY_FRONTIER_LAYOUT.FIXED_LABEL_AT_ENERGY)) - ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
           }),
         );
         // Machines on their own curve.
@@ -145,23 +158,37 @@ export class SqrtSChartNode extends Node {
           }
           const point = new Vector2(x(machine.beamEnergy), y(s));
           const label = new Text(`${machine.name} (${machine.year})`, {
-            font: "11px sans-serif",
+            font: FONTS.CREDIT,
             fill: ColliderLabColors.textColorProperty,
-            centerY: point.y + (machine.configuration === "collider" ? -9 : 9),
+            centerY:
+              point.y +
+              (machine.configuration === "collider"
+                ? -ENERGY_FRONTIER_LAYOUT.MACHINE_LABEL_OFFSET
+                : ENERGY_FRONTIER_LAYOUT.MACHINE_LABEL_OFFSET),
           });
           // Labels near the right edge go on the left of their dot.
-          if (point.x + 7 + label.width > width) {
-            label.right = point.x - 7;
+          const gap = ENERGY_FRONTIER_LAYOUT.MACHINE_DOT_RADIUS + 2;
+          if (point.x + gap + label.width > width) {
+            label.right = point.x - gap;
           } else {
-            label.left = point.x + 7;
+            label.left = point.x + gap;
           }
-          children.push(new Circle(5, { fill: ColliderLabColors.textColorProperty, center: point }), label);
+          children.push(
+            new Circle(ENERGY_FRONTIER_LAYOUT.MACHINE_DOT_RADIUS, {
+              fill: ColliderLabColors.textColorProperty,
+              center: point,
+            }),
+            label,
+          );
         }
         // Current beam energy.
         const e = 10 ** logEnergy;
         children.push(
-          new Line(x(e), 0, x(e), height, { stroke: ColliderLabColors.accentColorProperty, lineWidth: 1.5 }),
-          new Circle(6, {
+          new Line(x(e), 0, x(e), height, {
+            stroke: ColliderLabColors.accentColorProperty,
+            lineWidth: ENERGY_FRONTIER_LAYOUT.CURRENT_LINE_WIDTH,
+          }),
+          new Circle(ENERGY_FRONTIER_LAYOUT.CURRENT_MARKER_RADIUS, {
             fill: ColliderLabColors.histogramFillColorProperty,
             center: new Vector2(x(e), y(sqrtSFixedTarget(mass, e, PROTON_MASS))),
           }),
@@ -169,13 +196,21 @@ export class SqrtSChartNode extends Node {
         const colliderS = sqrtSCollider(e);
         if (inside(colliderS)) {
           children.push(
-            new Circle(6, { fill: ColliderLabColors.fitCurveColorProperty, center: new Vector2(x(e), y(colliderS)) }),
+            new Circle(ENERGY_FRONTIER_LAYOUT.CURRENT_MARKER_RADIUS, {
+              fill: ColliderLabColors.fitCurveColorProperty,
+              center: new Vector2(x(e), y(colliderS)),
+            }),
           );
         }
         layer.children = children;
       }),
     );
-    layer.clipArea = Shape.rect(-60, -10, width + 70, height + 40);
+    layer.clipArea = Shape.rect(
+      ENERGY_FRONTIER_LAYOUT.CLIP_LEFT,
+      ENERGY_FRONTIER_LAYOUT.CLIP_TOP,
+      width + ENERGY_FRONTIER_LAYOUT.CLIP_RIGHT_PAD,
+      height + ENERGY_FRONTIER_LAYOUT.CLIP_BOTTOM_PAD,
+    );
   }
 
   public override dispose(): void {

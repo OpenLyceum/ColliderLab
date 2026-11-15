@@ -7,10 +7,10 @@
  */
 
 import { Text, VBox } from "scenerystack/scenery";
-import { PhetFont } from "scenerystack/scenery-phet";
 import { Checkbox } from "scenerystack/sun";
 import type { Tandem } from "scenerystack/tandem";
 import ColliderLabColors from "../ColliderLabColors.js";
+import { PREFERENCES } from "../ColliderLabConstants.js";
 import ColliderLabNamespace from "../ColliderLabNamespace.js";
 import { StringManager } from "../i18n/StringManager.js";
 import type { ColliderLabPreferencesModel } from "./ColliderLabPreferencesModel.js";
@@ -23,27 +23,27 @@ export class ColliderLabPreferencesNode extends VBox {
     // colors (readable on white in both default and projector profiles), not textColorProperty
     // (which is near-white in default mode and would be invisible on the white dialog).
     const header = new Text(prefStrings.titleStringProperty, {
-      font: new PhetFont({ size: 18, weight: "bold" }),
+      font: PREFERENCES.TITLE_FONT,
       fill: ColliderLabColors.controlSurfaceTextColorProperty,
     });
 
     const showDetectorLabelsCheckbox = new Checkbox(
       preferencesModel.showDetectorLabelsProperty,
       new Text(prefStrings.showDetectorLabelsStringProperty, {
-        font: new PhetFont(14),
+        font: PREFERENCES.LABEL_FONT,
         fill: ColliderLabColors.controlSurfaceTextColorProperty,
       }),
       {
         checkboxColor: ColliderLabColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: ColliderLabColors.controlSurfaceColorProperty,
-        spacing: 8,
+        spacing: PREFERENCES.CHECKBOX_SPACING,
         ...(tandem && { tandem: tandem.createTandem("showDetectorLabelsCheckbox") }),
       },
     );
 
     super({
       align: "left",
-      spacing: 12,
+      spacing: PREFERENCES.SECTION_SPACING,
       children: [header, showDetectorLabelsCheckbox],
     });
   }

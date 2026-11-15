@@ -12,7 +12,13 @@ import { ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { AquaRadioButtonGroup, HSlider } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../ColliderLabConstants.js";
+import {
+  CONTROLS,
+  ENERGY_FRONTIER,
+  ENERGY_FRONTIER_LAYOUT,
+  FONTS,
+  SCREEN_VIEW_MARGIN,
+} from "../../ColliderLabConstants.js";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/ColliderLabButtonOptions.js";
 import { COLLIDER_LAB_SLIDER_OPTIONS } from "../../common/ColliderLabControlOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
@@ -21,13 +27,12 @@ import { type EnergyFrontierModel, LOG_ENERGY_RANGE, THRESHOLDS } from "../model
 import { EnergyFrontierScreenSummaryContent } from "./EnergyFrontierScreenSummaryContent.js";
 import { SqrtSChartNode } from "./SqrtSChartNode.js";
 
-const RIGHT_WIDTH = 330;
-const FONT = "13px sans-serif";
+const { RIGHT_WIDTH } = ENERGY_FRONTIER_LAYOUT;
 
-/** 12345 → "1.2 × 10⁴"-style RichText for big energies, plain below 10⁴. */
+/** 12345 → "1.2 × 10⁴"-style RichText for big energies, plain below ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD. */
 export function formatEnergy(value: number): string {
-  if (value < 1e4) {
-    return value < 10 ? value.toFixed(2) : value.toFixed(0);
+  if (value < ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD) {
+    return value < ENERGY_FRONTIER.SMALL_VALUE_THRESHOLD ? value.toFixed(2) : value.toFixed(0);
   }
   const exponent = Math.floor(Math.log10(value));
   return `${(value / 10 ** exponent).toFixed(1)} × 10<sup>${exponent}</sup>`;
@@ -47,20 +52,25 @@ export class EnergyFrontierScreenView extends ScreenView {
     const thresholdNames = strings as unknown as Record<string, { value: string } | undefined>;
     const text = (s: typeof strings.beamTitleStringProperty, bold = false) =>
       new Text(s, {
-        font: bold ? `bold ${FONT}` : FONT,
+        font: bold ? FONTS.PANEL_BOLD : FONTS.PANEL,
         fill: ColliderLabColors.textColorProperty,
-        maxWidth: RIGHT_WIDTH - 30,
+        maxWidth: RIGHT_WIDTH - ENERGY_FRONTIER_LAYOUT.TEXT_MAX_WIDTH_INSET,
       });
     const rich = (bold = false) =>
       new RichText("", {
-        font: bold ? `bold ${FONT}` : FONT,
+        font: bold ? FONTS.PANEL_BOLD : FONTS.PANEL,
         fill: ColliderLabColors.textColorProperty,
-        lineWrap: RIGHT_WIDTH - 24,
+        lineWrap: RIGHT_WIDTH - ENERGY_FRONTIER_LAYOUT.RICH_LINE_WRAP_INSET,
       });
 
-    const chartWidth = this.layoutBounds.width - RIGHT_WIDTH - 3 * SCREEN_VIEW_MARGIN - 50;
-    const chart = new SqrtSChartNode(model, chartWidth, this.layoutBounds.height - 90);
-    chart.x = this.layoutBounds.minX + SCREEN_VIEW_MARGIN + 50;
+    const chartWidth =
+      this.layoutBounds.width - RIGHT_WIDTH - 3 * SCREEN_VIEW_MARGIN - ENERGY_FRONTIER_LAYOUT.CHART_WIDTH_EXTRA;
+    const chart = new SqrtSChartNode(
+      model,
+      chartWidth,
+      this.layoutBounds.height - ENERGY_FRONTIER_LAYOUT.CHART_HEIGHT_INSET,
+    );
+    chart.x = this.layoutBounds.minX + SCREEN_VIEW_MARGIN + ENERGY_FRONTIER_LAYOUT.CHART_X_OFFSET;
     chart.y = this.layoutBounds.minY + SCREEN_VIEW_MARGIN;
 
     const beamGroup = new AquaRadioButtonGroup(
@@ -79,16 +89,17 @@ export class EnergyFrontierScreenView extends ScreenView {
       ] as const,
       {
         orientation: "horizontal",
-        spacing: 16,
-        radioButtonOptions: { radius: 7 },
+        spacing: ENERGY_FRONTIER_LAYOUT.BEAM_RADIO_SPACING,
+        radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
         accessibleName: a11y.controls.beamStringProperty,
       },
     );
     const slider = new HSlider(model.logEnergyProperty, LOG_ENERGY_RANGE, {
       ...COLLIDER_LAB_SLIDER_OPTIONS,
-      constrainValue: (v: number) => Math.round(v * 10) / 10,
-      keyboardStep: 0.1,
-      pageKeyboardStep: 1,
+      constrainValue: (v: number) =>
+        Math.round(v / ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP) * ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP,
+      keyboardStep: ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP,
+      pageKeyboardStep: ENERGY_FRONTIER.LOG_SLIDER_PAGE_STEP,
       accessibleName: a11y.controls.energyStringProperty,
     });
     const energyText = rich(true);
@@ -101,7 +112,7 @@ export class EnergyFrontierScreenView extends ScreenView {
     const reachGrid = new GridBox({ xSpacing: 12, ySpacing: 2, xAlign: "left" });
     const mark = (ok: boolean) =>
       new Text(ok ? "✓" : "✗", {
-        font: "bold 13px sans-serif",
+        font: FONTS.PANEL_BOLD,
         fill: ok ? ColliderLabColors.goodColorProperty : ColliderLabColors.badColorProperty,
       });
 
@@ -123,13 +134,13 @@ export class EnergyFrontierScreenView extends ScreenView {
         );
         reachGrid.rows = [
           [
-            new Text("", { font: FONT }),
+            new Text("", { font: FONTS.PANEL }),
             text(strings.fixedCurveStringProperty),
             text(strings.colliderCurveStringProperty),
           ],
           ...THRESHOLDS.map((t) => [
             new Text(thresholdNames[`${t.id}StringProperty`]?.value ?? t.id, {
-              font: FONT,
+              font: FONTS.PANEL,
               fill: ColliderLabColors.textColorProperty,
             }),
             mark(fixed >= t.sqrtS),
@@ -139,15 +150,15 @@ export class EnergyFrontierScreenView extends ScreenView {
       },
     );
     const note = new RichText(strings.partonNoteStringProperty, {
-      font: "italic 11px sans-serif",
+      font: FONTS.SMALL_ITALIC,
       fill: ColliderLabColors.textColorProperty,
-      opacity: 0.75,
-      lineWrap: RIGHT_WIDTH - 24,
+      opacity: ENERGY_FRONTIER_LAYOUT.PARTON_NOTE_OPACITY,
+      lineWrap: RIGHT_WIDTH - ENERGY_FRONTIER_LAYOUT.RICH_LINE_WRAP_INSET,
     });
 
     const panel = new ColliderLabPanel(
       new VBox({
-        spacing: 7,
+        spacing: ENERGY_FRONTIER_LAYOUT.PANEL_SPACING,
         align: "left",
         children: [
           text(strings.beamTitleStringProperty, true),
@@ -167,7 +178,7 @@ export class EnergyFrontierScreenView extends ScreenView {
     );
     panel.boundsProperty.link(() => {
       panel.right = this.layoutBounds.maxX - SCREEN_VIEW_MARGIN;
-      panel.top = this.layoutBounds.minY + 8;
+      panel.top = this.layoutBounds.minY + ENERGY_FRONTIER_LAYOUT.RIGHT_COLUMN_TOP_INSET;
     });
 
     const resetAllButton = new ResetAllButton({

@@ -14,7 +14,7 @@ import { PlayPauseButton, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { AquaRadioButtonGroup, Checkbox, HSlider, RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
-import { SCREEN_VIEW_MARGIN } from "../../ColliderLabConstants.js";
+import { BUMP_HUNT, BUMP_HUNT_LAYOUT, CONTROLS, FONTS, SCREEN_VIEW_MARGIN } from "../../ColliderLabConstants.js";
 import {
   FLAT_BUTTON_APPEARANCE_OPTIONS,
   FLAT_PANEL_PUSH_BUTTON_OPTIONS,
@@ -31,12 +31,7 @@ import { MassSpectrumChartNode } from "./MassSpectrumChartNode.js";
 import { PairCalculatorPanel } from "./PairCalculatorPanel.js";
 import { ZFitPanel } from "./ZFitPanel.js";
 
-const CHART_WIDTH = 530;
-const CHART_HEIGHT = 480;
-const CHART_LEFT = 24;
-const CHART_TOP = 20;
-const PANEL_WIDTH = 330;
-const FONT = "13px sans-serif";
+const { CHART_WIDTH, CHART_HEIGHT, CHART_LEFT, CHART_TOP, PANEL_WIDTH } = BUMP_HUNT_LAYOUT;
 
 export type BumpHuntScreenViewOptions = ScreenViewOptions;
 
@@ -52,9 +47,9 @@ export class BumpHuntScreenView extends ScreenView {
     const a11y = StringManager.getInstance().getBumpHuntA11yStrings();
     const label = (text: typeof strings.modePairStringProperty, bold = false) =>
       new Text(text, {
-        font: bold ? `bold ${FONT}` : FONT,
+        font: bold ? FONTS.PANEL_BOLD : FONTS.PANEL,
         fill: ColliderLabColors.textColorProperty,
-        maxWidth: PANEL_WIDTH - 40,
+        maxWidth: PANEL_WIDTH - BUMP_HUNT_LAYOUT.LABEL_INSET,
       });
 
     // ── Chart ──
@@ -73,7 +68,11 @@ export class BumpHuntScreenView extends ScreenView {
     const fullText = new PatternStringProperty(strings.fullPatternStringProperty, {
       count: SPECTRUM_EVENTS.toLocaleString(),
     });
-    const status = new Text("", { font: FONT, fill: ColliderLabColors.textColorProperty, maxWidth: CHART_WIDTH / 2 });
+    const status = new Text("", {
+      font: FONTS.PANEL,
+      fill: ColliderLabColors.textColorProperty,
+      maxWidth: CHART_WIDTH / 2,
+    });
     const updateStatus = (): void => {
       const s = statusProperty.value;
       status.string =
@@ -85,7 +84,7 @@ export class BumpHuntScreenView extends ScreenView {
               ? strings.loadFailedStringProperty.value
               : strings.loadingStringProperty.value;
       status.left = chart.x;
-      status.bottom = this.layoutBounds.maxY - 6;
+      status.bottom = this.layoutBounds.maxY - BUMP_HUNT_LAYOUT.STATUS_BOTTOM_INSET;
     };
     statusProperty.link(updateStatus);
     filledText.lazyLink(updateStatus);
@@ -93,19 +92,22 @@ export class BumpHuntScreenView extends ScreenView {
     this.addChild(status);
 
     const credit = new Text(strings.creditStringProperty, {
-      font: "11px sans-serif",
+      font: FONTS.CREDIT,
       fill: ColliderLabColors.textColorProperty,
-      opacity: 0.7,
+      opacity: BUMP_HUNT_LAYOUT.CREDIT_OPACITY,
       maxWidth: CHART_WIDTH,
     });
     credit.boundsProperty.link(() => {
       credit.right = chart.x + CHART_WIDTH;
-      credit.bottom = this.layoutBounds.maxY - 6;
+      credit.bottom = this.layoutBounds.maxY - BUMP_HUNT_LAYOUT.STATUS_BOTTOM_INSET;
     });
     this.addChild(credit);
 
     // ── Mode + range controls ──
-    const radioOptions = { spacing: 5, radioButtonOptions: { radius: 7 } };
+    const radioOptions = {
+      spacing: BUMP_HUNT_LAYOUT.RADIO_SPACING,
+      radioButtonOptions: { radius: CONTROLS.RADIO_RADIUS },
+    };
     const modeGroup = new AquaRadioButtonGroup(
       model.fillModeProperty,
       [
@@ -149,7 +151,7 @@ export class BumpHuntScreenView extends ScreenView {
     });
     const clearButton = new RectangularPushButton({
       ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-      content: new Text(strings.clearStringProperty, { font: FONT, fill: LIGHT_SURFACE_TEXT_FILL }),
+      content: new Text(strings.clearStringProperty, { font: FONTS.PANEL, fill: LIGHT_SURFACE_TEXT_FILL }),
       listener: () => model.clearHistogram(),
       accessibleName: a11y.controls.clearStringProperty,
     });
@@ -159,14 +161,17 @@ export class BumpHuntScreenView extends ScreenView {
 
     const controlsPanel = new ColliderLabPanel(
       new VBox({
-        spacing: 7,
+        spacing: BUMP_HUNT_LAYOUT.CONTROLS_SPACING,
         align: "left",
         children: [
           label(strings.fillModeTitleStringProperty, true),
           modeGroup,
           label(strings.viewTitleStringProperty, true),
           rangeGroup,
-          new HBox({ spacing: 14, children: [labelsCheckbox, clearButton] }),
+          new HBox({
+            spacing: BUMP_HUNT_LAYOUT.STREAM_ROW_SPACING,
+            children: [labelsCheckbox, clearButton],
+          }),
         ],
       }),
       { minWidth: PANEL_WIDTH, maxWidth: PANEL_WIDTH },
@@ -176,7 +181,7 @@ export class BumpHuntScreenView extends ScreenView {
     const pairPanel = new PairCalculatorPanel(model, PANEL_WIDTH);
 
     const playPause = new PlayPauseButton(model.isStreamingProperty, {
-      radius: 18,
+      radius: BUMP_HUNT_LAYOUT.PLAY_PAUSE_RADIUS,
       ...FLAT_BUTTON_APPEARANCE_OPTIONS,
       accessibleName: a11y.controls.streamPlayPauseStringProperty,
     });
@@ -204,23 +209,30 @@ export class BumpHuntScreenView extends ScreenView {
       new PatternStringProperty(strings.eventsPerSecondPatternStringProperty, {
         value: new DerivedProperty([model.streamRateProperty], (r) => Math.round(r).toLocaleString()),
       }),
-      { font: FONT, fill: ColliderLabColors.textColorProperty },
+      { font: FONTS.PANEL, fill: ColliderLabColors.textColorProperty },
     );
+    const rateStep = BUMP_HUNT.LOG_RATE_KEYBOARD_STEP;
     const rateSlider = new HSlider(rateExponentProperty, rateExponentRange, {
       ...COLLIDER_LAB_SLIDER_OPTIONS,
-      constrainValue: (exponent: number) => Math.round(exponent * 4) / 4,
-      keyboardStep: 0.25,
-      shiftKeyboardStep: 0.25,
-      pageKeyboardStep: 1,
+      constrainValue: (exponent: number) => Math.round(exponent / rateStep) * rateStep,
+      keyboardStep: rateStep,
+      shiftKeyboardStep: rateStep,
+      pageKeyboardStep: BUMP_HUNT.LOG_RATE_PAGE_STEP,
       accessibleName: a11y.controls.streamRateStringProperty,
     });
     const streamPanel = new ColliderLabPanel(
       new VBox({
-        spacing: 8,
+        spacing: BUMP_HUNT_LAYOUT.PAIR_PANEL_SPACING,
         align: "left",
         children: [
-          new HBox({ spacing: 12, children: [playPause, label(strings.modeStreamStringProperty, true)] }),
-          new HBox({ spacing: 8, children: [label(strings.streamRateStringProperty), rateSlider] }),
+          new HBox({
+            spacing: BUMP_HUNT_LAYOUT.STREAM_TITLE_SPACING,
+            children: [playPause, label(strings.modeStreamStringProperty, true)],
+          }),
+          new HBox({
+            spacing: BUMP_HUNT_LAYOUT.PAIR_PANEL_SPACING,
+            children: [label(strings.streamRateStringProperty), rateSlider],
+          }),
           rateText,
         ],
       }),
@@ -235,13 +247,13 @@ export class BumpHuntScreenView extends ScreenView {
     });
 
     const rightColumn = new VBox({
-      spacing: 8,
+      spacing: BUMP_HUNT_LAYOUT.PAIR_PANEL_SPACING,
       align: "left",
       children: [controlsPanel, benchSlot, fitPanel],
     });
     rightColumn.boundsProperty.link(() => {
       rightColumn.right = this.layoutBounds.maxX - SCREEN_VIEW_MARGIN;
-      rightColumn.top = this.layoutBounds.minY + 10;
+      rightColumn.top = this.layoutBounds.minY + BUMP_HUNT_LAYOUT.RIGHT_COLUMN_TOP_INSET;
     });
     this.addChild(rightColumn);
 

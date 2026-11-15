@@ -5,6 +5,7 @@
  * because it is only ~2 KB, and the resonances a student should find in it.
  */
 
+import { MASS } from "../../ColliderLabConstants.js";
 import spectrum from "./data/spectrum.json" with { type: "json" };
 import { MassHistogram } from "./MassHistogram.js";
 
@@ -27,15 +28,15 @@ export type Resonance = {
 
 /** The resonances visible in the CMS dimuon spectrum, lightest first (PDG 2024 masses). */
 export const RESONANCES: readonly Resonance[] = [
-  { id: "eta", symbol: "η", mass: 0.5479, content: "uū, dd̄, ss̄", clearPeak: false },
-  { id: "rhoOmega", symbol: "ρ/ω", mass: 0.7753, content: "uū, dd̄", clearPeak: true },
-  { id: "phi", symbol: "φ", mass: 1.0195, content: "ss̄", clearPeak: true },
-  { id: "jpsi", symbol: "J/ψ", mass: 3.0969, content: "cc̄", clearPeak: true },
-  { id: "psi2s", symbol: "ψ′", mass: 3.6861, content: "cc̄", clearPeak: true },
-  { id: "upsilon1s", symbol: "Υ(1S)", mass: 9.4603, content: "bb̄", clearPeak: true },
-  { id: "upsilon2s", symbol: "Υ(2S)", mass: 10.0233, content: "bb̄", clearPeak: true },
-  { id: "upsilon3s", symbol: "Υ(3S)", mass: 10.3552, content: "bb̄", clearPeak: false },
-  { id: "z", symbol: "Z", mass: 91.188, content: "—", clearPeak: true },
+  { id: "eta", symbol: "η", mass: MASS.ETA, content: "uū, dd̄, ss̄", clearPeak: false },
+  { id: "rhoOmega", symbol: "ρ/ω", mass: MASS.RHO_OMEGA, content: "uū, dd̄", clearPeak: true },
+  { id: "phi", symbol: "φ", mass: MASS.PHI, content: "ss̄", clearPeak: true },
+  { id: "jpsi", symbol: "J/ψ", mass: MASS.JPSI, content: "cc̄", clearPeak: true },
+  { id: "psi2s", symbol: "ψ′", mass: MASS.PSI2S, content: "cc̄", clearPeak: true },
+  { id: "upsilon1s", symbol: "Υ(1S)", mass: MASS.UPSILON_1S, content: "bb̄", clearPeak: true },
+  { id: "upsilon2s", symbol: "Υ(2S)", mass: MASS.UPSILON_2S, content: "bb̄", clearPeak: true },
+  { id: "upsilon3s", symbol: "Υ(3S)", mass: MASS.UPSILON_3S, content: "bb̄", clearPeak: false },
+  { id: "z", symbol: "Z", mass: MASS.Z, content: "—", clearPeak: true },
 ];
 
 export const SPECTRUM_SOURCE = spectrum.source;

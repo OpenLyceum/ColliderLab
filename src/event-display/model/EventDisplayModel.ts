@@ -19,8 +19,8 @@ import {
   StringUnionProperty,
   type TReadOnlyProperty,
 } from "scenerystack/axon";
-import { Range } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { B_FIELD, EVENT_GEN } from "../../ColliderLabConstants.js";
 import { SeededRandom } from "../../common/model/random.js";
 import { type CircleFit, fitCircle, type Sagitta, sagittaOf } from "./circleFit.js";
 import { ptFromRadius } from "./detector.js";
@@ -30,8 +30,8 @@ import { type KShortMeasurement, measureKShort } from "./kShortMeasurement.js";
 export const MODES = ["explore", "game"] as const;
 export type Mode = (typeof MODES)[number];
 
-export const B_FIELD_RANGE = new Range(0.5, 4);
-export const DEFAULT_B_FIELD = 3.8;
+export const B_FIELD_RANGE = B_FIELD.RANGE;
+export const DEFAULT_B_FIELD = B_FIELD.DEFAULT;
 
 export type TrackMeasurement = {
   readonly fit: CircleFit | null;
@@ -69,7 +69,7 @@ export class EventDisplayModel implements TModel {
   private readonly random: SeededRandom;
   private seed: number;
 
-  public constructor(seed = 1964) {
+  public constructor(seed: number = EVENT_GEN.DEFAULT_SEED) {
     this.seed = seed;
     this.random = new SeededRandom(seed);
     this.eventProperty = new Property(this.makeEvent(this.processProperty.value));
@@ -123,7 +123,7 @@ export class EventDisplayModel implements TModel {
   }
 
   private makeEvent(process: Process): DetectorEvent {
-    this.seed = Math.floor(this.random.next() * 2 ** 31);
+    this.seed = Math.floor(this.random.next() * EVENT_GEN.SEED_RANGE);
     // Generation and detector smearing share a per-event seed, so changing B replays the same event.
     const generator = new SeededRandom(this.seed);
     const event = generateEvent(generator, process, this.bFieldProperty.value);

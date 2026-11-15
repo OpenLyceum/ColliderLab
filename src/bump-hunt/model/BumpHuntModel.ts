@@ -16,8 +16,8 @@
  */
 
 import { BooleanProperty, Emitter, NumberProperty, Property, StringUnionProperty } from "scenerystack/axon";
-import { Range } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { BUMP_HUNT } from "../../ColliderLabConstants.js";
 import { SeededRandom } from "../../common/model/random.js";
 import { type DimuonDataset, type DimuonEvent, loadDimuonDataset } from "./DimuonDataset.js";
 import { emptyLogHistogram, emptyZHistogram, fullSpectrum, zRegionSpectrum } from "./dimuonSpectrum.js";
@@ -34,15 +34,15 @@ export const LOAD_STATES = ["idle", "loading", "ready", "failed"] as const;
 export type LoadState = (typeof LOAD_STATES)[number];
 
 /** Events per second in "stream" mode. */
-export const STREAM_RATE_RANGE = new Range(10, 20000);
-export const DEFAULT_STREAM_RATE = 500;
+export const STREAM_RATE_RANGE = BUMP_HUNT.STREAM_RATE_RANGE;
+export const DEFAULT_STREAM_RATE = BUMP_HUNT.DEFAULT_STREAM_RATE;
 
 /** Assumed detector mass resolution at the Z, GeV. CMS 2011 muons: ~1.3 GeV. */
-export const RESOLUTION_RANGE = new Range(0, 3);
-export const DEFAULT_RESOLUTION = 1.3;
+export const RESOLUTION_RANGE = BUMP_HUNT.RESOLUTION_RANGE;
+export const DEFAULT_RESOLUTION = BUMP_HUNT.DEFAULT_RESOLUTION;
 
 /** Fixed seed so a classroom sees the same event sequence. */
-const SHUFFLE_SEED = 20111;
+const SHUFFLE_SEED = BUMP_HUNT.SHUFFLE_SEED;
 
 export class BumpHuntModel implements TModel {
   public readonly fillModeProperty = new StringUnionProperty<FillMode>("pair", { validValues: FILL_MODES });

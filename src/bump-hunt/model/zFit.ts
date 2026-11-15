@@ -18,26 +18,28 @@
  * come from the curvature of −ln L.
  */
 
+import { MASS, Z_FIT } from "../../ColliderLabConstants.js";
 import { nelderMead, uncertaintiesFromNll } from "../../common/model/nelderMead.js";
 import type { MassHistogram } from "./MassHistogram.js";
 
 /** ħ in GeV·s (CODATA 2018: 6.582119569 × 10⁻²⁵ GeV·s). */
-export const HBAR_GEV_S = 6.582119569e-25;
+export const HBAR_GEV_S = Z_FIT.HBAR_GEV_S;
 
 /** PDG 2024 reference values, for comparison readouts. */
-export const PDG_Z_MASS_GEV = 91.188;
-export const PDG_Z_WIDTH_GEV = 2.4955;
+export const PDG_Z_MASS_GEV = MASS.Z;
+export const PDG_Z_WIDTH_GEV = Z_FIT.PDG_WIDTH_GEV;
 
 /** Default fit window, GeV. */
-export const Z_FIT_WINDOW: readonly [number, number] = [70, 110];
+export const Z_FIT_WINDOW: readonly [number, number] = [Z_FIT.WINDOW_MIN, Z_FIT.WINDOW_MAX];
 
 /** Pseudo-Voigt density in m (integrates to 1). */
 export function voigtDensity(m: number, mass: number, width: number, sigma: number): number {
-  const fg = 2.354820045 * sigma;
+  const fg = Z_FIT.FWHM_SIGMA_FACTOR * sigma;
   const fl = width;
   if (fg === 0) {
     return width / (2 * Math.PI) / ((m - mass) ** 2 + (width / 2) ** 2);
   }
+  // Thompson–Cox–Hastings pseudo-Voigt coefficients (keep together).
   const f =
     (fg ** 5 +
       2.69269 * fg ** 4 * fl +
@@ -49,7 +51,7 @@ export function voigtDensity(m: number, mass: number, width: number, sigma: numb
   const r = fl / f;
   const eta = 1.36603 * r - 0.47719 * r * r + 0.11116 * r ** 3;
   const lorentz = f / 2 / Math.PI / ((m - mass) ** 2 + (f / 2) ** 2);
-  const s = f / 2.354820045;
+  const s = f / Z_FIT.FWHM_SIGMA_FACTOR;
   const gauss = Math.exp(-((m - mass) ** 2) / (2 * s * s)) / (s * Math.sqrt(2 * Math.PI));
   return eta * lorentz + (1 - eta) * gauss;
 }
@@ -85,7 +87,7 @@ export function fitZ(histogram: MassHistogram, resolution: number, window = Z_FI
     }
   }
   const total = bins.reduce((sum, b) => sum + b.count, 0);
-  if (total < 30) {
+  if (total < Z_FIT.MIN_EVENTS) {
     return null;
   }
   const sigma = Math.max(0, resolution);
@@ -93,11 +95,14 @@ export function fitZ(histogram: MassHistogram, resolution: number, window = Z_FI
   // parameters: [signal, mass, width, background, slope]
   const expected = (p: readonly number[], m: number, widthOfBin: number): number => {
     const [signal = 0, mass = 0, width = 0, background = 0, slope = 0] = p;
-    return signal * widthOfBin * voigtDensity(m, mass, width, sigma) + widthOfBin * (background + slope * (m - 91));
+    return (
+      signal * widthOfBin * voigtDensity(m, mass, width, sigma) +
+      widthOfBin * (background + slope * (m - PDG_Z_MASS_GEV))
+    );
   };
   const nll = (p: readonly number[]): number => {
     const [signal = 0, , width = 0] = p;
-    if (signal <= 0 || width <= 0.01 || width > 30) {
+    if (signal <= 0 || width <= Z_FIT.MIN_WIDTH || width > Z_FIT.MAX_WIDTH) {
       return Number.POSITIVE_INFINITY;
     }
     let sum = 0;
@@ -111,7 +116,7 @@ export function fitZ(histogram: MassHistogram, resolution: number, window = Z_FI
     return sum;
   };
 
-  const start = [0.9 * total, 91, 2.5, (0.1 * total) / (window[1] - window[0]), 0];
+  const start = [0.9 * total, PDG_Z_MASS_GEV, Z_FIT.START_WIDTH, (0.1 * total) / (window[1] - window[0]), 0];
   const steps = [0.1 * total, 1, 0.5, 0.05 * total * 0.01 + 1, 0.1];
   let { parameters } = nelderMead(nll, start, steps);
   // A restart from the first minimum polishes the result.

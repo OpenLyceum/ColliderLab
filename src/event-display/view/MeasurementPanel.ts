@@ -9,12 +9,11 @@ import { Multilink } from "scenerystack/axon";
 import { HBox, RichText, Text, VBox } from "scenerystack/scenery";
 import { RectangularPushButton } from "scenerystack/sun";
 import ColliderLabColors from "../../ColliderLabColors.js";
+import { DISPLAY_UNITS, EVENT_DISPLAY_LAYOUT, FONTS, K_SHORT } from "../../ColliderLabConstants.js";
 import { FLAT_PANEL_PUSH_BUTTON_OPTIONS, LIGHT_SURFACE_TEXT_FILL } from "../../common/ColliderLabButtonOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { EventDisplayModel } from "../model/EventDisplayModel.js";
-
-const FONT = "13px sans-serif";
 
 const fill = (pattern: string, values: Record<string, string>): string =>
   Object.entries(values).reduce((s, [k, v]) => s.replace(`{{${k}}}`, v), pattern);
@@ -28,9 +27,9 @@ export class MeasurementPanel extends ColliderLabPanel {
     const a11y = StringManager.getInstance().getEventDisplayA11yStrings();
     const rich = (bold = false) =>
       new RichText("", {
-        font: bold ? `bold ${FONT}` : FONT,
+        font: bold ? FONTS.PANEL_BOLD : FONTS.PANEL,
         fill: ColliderLabColors.textColorProperty,
-        lineWrap: width - 20,
+        lineWrap: width - EVENT_DISPLAY_LAYOUT.PANEL_CONTENT_INSET,
       });
     const button = (
       label: typeof strings.nextTrackStringProperty,
@@ -39,14 +38,18 @@ export class MeasurementPanel extends ColliderLabPanel {
     ) =>
       new RectangularPushButton({
         ...FLAT_PANEL_PUSH_BUTTON_OPTIONS,
-        content: new RichText(label, { font: FONT, fill: LIGHT_SURFACE_TEXT_FILL, maxWidth: width - 40 }),
+        content: new RichText(label, {
+          font: FONTS.PANEL,
+          fill: LIGHT_SURFACE_TEXT_FILL,
+          maxWidth: width - EVENT_DISPLAY_LAYOUT.BUTTON_WIDTH_INSET,
+        }),
         listener,
         accessibleName: name,
       });
 
     // ── track ──
     const trackTitle = new Text(strings.trackTitleStringProperty, {
-      font: `bold ${FONT}`,
+      font: FONTS.PANEL_BOLD,
       fill: ColliderLabColors.textColorProperty,
     });
     const nextTrackButton = button(strings.nextTrackStringProperty, a11y.controls.nextTrackStringProperty, () => {
@@ -57,9 +60,9 @@ export class MeasurementPanel extends ColliderLabPanel {
       }
     });
     const formula = new Text(strings.formulaStringProperty, {
-      font: "italic 12px sans-serif",
+      font: FONTS.FORMULA,
       fill: ColliderLabColors.textColorProperty,
-      opacity: 0.8,
+      opacity: EVENT_DISPLAY_LAYOUT.FORMULA_OPACITY,
     });
     const hits = rich();
     const fit = rich();
@@ -69,7 +72,7 @@ export class MeasurementPanel extends ColliderLabPanel {
 
     // ── K⁰_S ──
     const kTitle = new RichText(strings.kShortTitleStringProperty, {
-      font: `bold ${FONT}`,
+      font: FONTS.PANEL_BOLD,
       fill: ColliderLabColors.textColorProperty,
     });
     const flight = rich();
@@ -79,10 +82,10 @@ export class MeasurementPanel extends ColliderLabPanel {
     const estimate = rich(true);
     estimate.fill = ColliderLabColors.fitCurveColorProperty;
     const note = new RichText(strings.kShortNoteStringProperty, {
-      font: "italic 11px sans-serif",
+      font: FONTS.SMALL_ITALIC,
       fill: ColliderLabColors.textColorProperty,
-      opacity: 0.75,
-      lineWrap: width - 20,
+      opacity: EVENT_DISPLAY_LAYOUT.NOTE_OPACITY,
+      lineWrap: width - EVENT_DISPLAY_LAYOUT.PANEL_CONTENT_INSET,
     });
     const kBox = new VBox({
       spacing: 3,
@@ -117,7 +120,7 @@ export class MeasurementPanel extends ColliderLabPanel {
           sagitta.string = measurement.sagitta
             ? fill(strings.sagittaPatternStringProperty.value, {
                 chord: measurement.sagitta.chord.toFixed(2),
-                sagitta: (measurement.sagitta.sagitta * 1000).toPrecision(3),
+                sagitta: (measurement.sagitta.sagitta * DISPLAY_UNITS.M_TO_MM).toPrecision(3),
                 pt: measurement.sagittaPt === null ? "∞" : measurement.sagittaPt.toPrecision(3),
               })
             : "";
@@ -128,14 +131,14 @@ export class MeasurementPanel extends ColliderLabPanel {
         kBox.visible = kShort !== null && (mode === "explore" || showTruth);
         if (kShort) {
           flight.string = fill(strings.flightPatternStringProperty.value, {
-            value: (kShort.flightLength * 100).toFixed(1),
+            value: (kShort.flightLength * DISPLAY_UNITS.M_TO_CM).toFixed(1),
           });
           kaonPt.string = fill(strings.kaonPtPatternStringProperty.value, {
             value: kShort.pt.toFixed(2),
             gb: kShort.gammaBeta.toFixed(2),
           });
           properTime.string = fill(strings.properTimePatternStringProperty.value, {
-            value: (kShort.properTime / 1e-10).toFixed(2),
+            value: (kShort.properTime / K_SHORT.DISPLAY_TIME_SCALE).toFixed(2),
           });
         }
         bankButton.enabled = kShort !== null && !banked;
@@ -145,17 +148,20 @@ export class MeasurementPanel extends ColliderLabPanel {
             ? ""
             : fill(strings.lifetimePatternStringProperty.value, {
                 count: `${times.length}`,
-                value: (mean / 1e-10).toFixed(2),
+                value: (mean / K_SHORT.DISPLAY_TIME_SCALE).toFixed(2),
               });
       },
     );
 
     super(
       new VBox({
-        spacing: 5,
+        spacing: EVENT_DISPLAY_LAYOUT.MEASUREMENT_SPACING,
         align: "left",
         children: [
-          new HBox({ spacing: 12, children: [trackTitle, nextTrackButton] }),
+          new HBox({
+            spacing: EVENT_DISPLAY_LAYOUT.MEASUREMENT_ROW_SPACING,
+            children: [trackTitle, nextTrackButton],
+          }),
           formula,
           hits,
           fit,

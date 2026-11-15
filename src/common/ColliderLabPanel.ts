@@ -29,7 +29,7 @@ import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { Node } from "scenerystack/scenery";
 import { Panel, type PanelOptions } from "scenerystack/sun";
 import ColliderLabColors from "../ColliderLabColors.js";
-import { PANEL_CORNER_RADIUS } from "../ColliderLabConstants.js";
+import { PANEL, PANEL_CORNER_RADIUS } from "../ColliderLabConstants.js";
 
 export type ColliderLabPanelOptions = PanelOptions;
 
@@ -40,8 +40,8 @@ export class ColliderLabPanel extends Panel {
         fill: ColliderLabColors.panelBackgroundColorProperty,
         stroke: ColliderLabColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: 12,
-        yMargin: 10,
+        xMargin: PANEL.X_MARGIN,
+        yMargin: PANEL.Y_MARGIN,
       },
       providedOptions,
     );
