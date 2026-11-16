@@ -1,3 +1,4 @@
+import { PAIR_CALCULATOR_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * PairCalculatorPanel.ts
  *
@@ -44,9 +45,14 @@ export class PairCalculatorPanel extends ColliderLabPanel {
       }
       return event.muons[0].fourVector.plus(event.muons[1].fourVector);
     });
-    const fixed = (value: number, digits = 2): string => value.toFixed(digits);
-    const massSquaredProperty = new DerivedProperty([sumProperty], (sum) => (sum ? fixed(sum.mass ** 2, 2) : "—"));
-    const massProperty = new DerivedProperty([sumProperty], (sum) => (sum ? fixed(sum.mass, 3) : "—"));
+    const fixed = (value: number, digits: number = PAIR_CALCULATOR_PANEL_SETTINGS.DEFAULT_DIGITS): string =>
+      value.toFixed(digits);
+    const massSquaredProperty = new DerivedProperty([sumProperty], (sum) =>
+      sum ? fixed(sum.mass ** 2, PAIR_CALCULATOR_PANEL_SETTINGS.MASS_SQUARED_PROPERTY_DIGITS) : "—",
+    );
+    const massProperty = new DerivedProperty([sumProperty], (sum) =>
+      sum ? fixed(sum.mass, PAIR_CALCULATOR_PANEL_SETTINGS.MASS_FIXED_DIGITS) : "—",
+    );
 
     const rebuild = (): void => {
       const event = model.currentEventProperty.value;

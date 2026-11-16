@@ -1,3 +1,4 @@
+import { DETECTOR_NODE_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * DetectorNode.ts
  *
@@ -303,7 +304,7 @@ export class DetectorNode extends Node {
           }),
           new Circle(DETECTOR_VIEW.MARKER_RADIUS, {
             stroke: ColliderLabColors.selectedTrackColorProperty,
-            lineWidth: 2,
+            lineWidth: DETECTOR_NODE_SETTINGS.DRAW_OVERLAYS_LINE_WIDTH,
             center: v,
             pickable: false,
           }),

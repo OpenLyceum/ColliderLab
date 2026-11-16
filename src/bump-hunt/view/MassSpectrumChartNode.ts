@@ -1,3 +1,4 @@
+import { MASS_SPECTRUM_CHART_NODE_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * MassSpectrumChartNode.ts
  *
@@ -255,7 +256,8 @@ export class MassSpectrumChartNode extends Node {
         }
         rowRight[row] = px + text.width / 2;
         text.centerX = px;
-        text.top = 6 + row * MASS_SPECTRUM_CHART.LABEL_ROW_HEIGHT;
+        text.top =
+          MASS_SPECTRUM_CHART_NODE_SETTINGS.DRAW_LABELS_TOP_OFFSET + row * MASS_SPECTRUM_CHART.LABEL_ROW_HEIGHT;
         labels.push(
           new Line(px, text.bottom + 2, px, this.chartHeight, {
             stroke: ColliderLabColors.resonanceLabelColorProperty,

@@ -1,3 +1,4 @@
+import { ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * EnergyFrontierScreenView.ts
  *
@@ -32,7 +33,9 @@ const { RIGHT_WIDTH } = ENERGY_FRONTIER_LAYOUT;
 /** 12345 → "1.2 × 10⁴"-style RichText for big energies, plain below ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD. */
 function formatEnergy(value: number): string {
   if (value < ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD) {
-    return value < ENERGY_FRONTIER.SMALL_VALUE_THRESHOLD ? value.toFixed(2) : value.toFixed(0);
+    return value < ENERGY_FRONTIER.SMALL_VALUE_THRESHOLD
+      ? value.toFixed(ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS.FORMAT_ENERGY_DECIMAL_PLACES)
+      : value.toFixed(0);
   }
   const exponent = Math.floor(Math.log10(value));
   return `${(value / 10 ** exponent).toFixed(1)} × 10<sup>${exponent}</sup>`;
@@ -109,7 +112,11 @@ export class EnergyFrontierScreenView extends ScreenView {
     colliderText.fill = ColliderLabColors.fitCurveColorProperty;
     const equivalentText = rich();
 
-    const reachGrid = new GridBox({ xSpacing: 12, ySpacing: 2, xAlign: "left" });
+    const reachGrid = new GridBox({
+      xSpacing: ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS.REACH_GRID_X_SPACING,
+      ySpacing: ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS.REACH_GRID_Y_SPACING,
+      xAlign: "left",
+    });
     const mark = (ok: boolean) =>
       new Text(ok ? "✓" : "✗", {
         font: FONTS.PANEL_BOLD,

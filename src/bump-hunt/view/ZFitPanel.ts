@@ -1,3 +1,4 @@
+import { Z_FIT_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * ZFitPanel.ts
  *
@@ -62,10 +63,10 @@ export class ZFitPanel extends ColliderLabPanel {
 
     const pick = (f: (r: NonNullable<typeof model.fitResultProperty.value>) => string) =>
       new DerivedProperty([model.fitResultProperty], (r) => (r ? f(r) : "—"));
-    const massValue = pick((r) => r.mass.toFixed(2));
-    const massError = pick((r) => r.massError.toFixed(2));
-    const widthValue = pick((r) => r.width.toFixed(2));
-    const widthError = pick((r) => r.widthError.toFixed(2));
+    const massValue = pick((r) => r.mass.toFixed(Z_FIT_PANEL_SETTINGS.MASS_VALUE_DECIMAL_PLACES));
+    const massError = pick((r) => r.massError.toFixed(Z_FIT_PANEL_SETTINGS.MASS_ERROR_DECIMAL_PLACES));
+    const widthValue = pick((r) => r.width.toFixed(Z_FIT_PANEL_SETTINGS.WIDTH_VALUE_DECIMAL_PLACES));
+    const widthError = pick((r) => r.widthError.toFixed(Z_FIT_PANEL_SETTINGS.WIDTH_ERROR_DECIMAL_PLACES));
     const lifetimeValue = pick((r) => (r.lifetime / Z_FIT.DISPLAY_LIFETIME_SCALE).toFixed(1));
 
     const massText = new Text(
@@ -82,18 +83,22 @@ export class ZFitPanel extends ColliderLabPanel {
     );
     const pdgText = new Text(
       new PatternStringProperty(strings.fitPdgPatternStringProperty, {
-        mass: PDG_Z_MASS_GEV.toFixed(2),
-        width: PDG_Z_WIDTH_GEV.toFixed(2),
+        mass: PDG_Z_MASS_GEV.toFixed(Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
+        width: PDG_Z_WIDTH_GEV.toFixed(Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
       }),
       { ...textOptions, font: FONTS.CREDIT, opacity: BUMP_HUNT_LAYOUT.PDG_OPACITY },
     );
     const tooFewText = new Text(strings.fitTooFewStringProperty, {
       ...textOptions,
       font: FONTS.TICK,
-      maxWidth: width - 90,
+      maxWidth: width - Z_FIT_PANEL_SETTINGS.TOO_FEW_TEXT_MAX_WIDTH_OFFSET,
     });
 
-    const results = new VBox({ spacing: 3, align: "left", children: [massText, widthText, lifetimeText, pdgText] });
+    const results = new VBox({
+      spacing: Z_FIT_PANEL_SETTINGS.RESULTS_SPACING,
+      align: "left",
+      children: [massText, widthText, lifetimeText, pdgText],
+    });
     let attempted = false;
     fitButton.addListener(() => {
       attempted = true;
@@ -109,7 +114,7 @@ export class ZFitPanel extends ColliderLabPanel {
 
     super(
       new VBox({
-        spacing: 6,
+        spacing: Z_FIT_PANEL_SETTINGS.CONSTRUCTOR_SPACING,
         align: "left",
         children: [
           title,

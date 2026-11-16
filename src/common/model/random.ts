@@ -1,3 +1,4 @@
+import { RANDOM_NUMERICS } from "../../ColliderLabConstants.js";
 /**
  * random.ts
  *
@@ -14,11 +15,11 @@ export class SeededRandom {
 
   /** Uniform on [0, 1). */
   public next(): number {
-    this.state = (this.state + 0x6d2b79f5) >>> 0;
+    this.state = (this.state + RANDOM_NUMERICS.STATE_INCREMENT) >>> 0;
     let t = this.state;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    return ((t ^ (t >>> 14)) >>> 0) / RANDOM_NUMERICS.UINT32_STATES;
   }
 
   public uniform(min: number, max: number): number {
@@ -27,14 +28,14 @@ export class SeededRandom {
 
   /** Standard normal (Box–Muller). */
   public gaussian(mean = 0, sigma = 1): number {
-    const u = Math.max(this.next(), 1e-12);
+    const u = Math.max(this.next(), RANDOM_NUMERICS.MIN_UNIFORM);
     const v = this.next();
     return mean + sigma * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
   }
 
   /** Exponential with the given mean. */
   public exponential(mean: number): number {
-    return -mean * Math.log(Math.max(this.next(), 1e-12));
+    return -mean * Math.log(Math.max(this.next(), RANDOM_NUMERICS.MIN_UNIFORM));
   }
 
   /** Breit–Wigner (Cauchy) of width Γ about m, clipped to [min, max]. */

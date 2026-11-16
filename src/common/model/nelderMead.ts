@@ -1,3 +1,4 @@
+import { NELDER_MEAD_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * nelderMead.ts
  *
@@ -70,8 +71,8 @@ export function nelderMead(
   objective: Objective,
   start: readonly number[],
   steps: readonly number[],
-  maximumIterations = 4000,
-  tolerance = 1e-9,
+  maximumIterations: number = NELDER_MEAD_SETTINGS.DEFAULT_MAXIMUM_ITERATIONS,
+  tolerance: number = NELDER_MEAD_SETTINGS.DEFAULT_TOLERANCE,
 ): { readonly parameters: number[]; readonly value: number } {
   const n = start.length;
   const vertices: number[][] = [start.slice()];
@@ -107,7 +108,7 @@ function invert(matrix: readonly (readonly number[])[]): number[][] | null {
     }
     const pivotRow = a[pivot];
     const pivotValue = pivotRow?.[col] ?? 0;
-    if (!pivotRow || Math.abs(pivotValue) < 1e-300) {
+    if (!pivotRow || Math.abs(pivotValue) < NELDER_MEAD_SETTINGS.MIN_PIVOT) {
       return null;
     }
     [a[col], a[pivot]] = [pivotRow, a[col] ?? []];
@@ -144,10 +145,10 @@ export function uncertaintiesFromNll(
   };
   const hessian: number[][] = [];
   for (let i = 0; i < n; i++) {
-    const hi = steps[i] ?? 1e-3;
+    const hi = steps[i] ?? NELDER_MEAD_SETTINGS.HESSIAN_STEP;
     const row: number[] = [];
     for (let j = 0; j < n; j++) {
-      const hj = steps[j] ?? 1e-3;
+      const hj = steps[j] ?? NELDER_MEAD_SETTINGS.HESSIAN_STEP;
       row.push(
         i === j
           ? (shifted([[i, hi]]) - 2 * f0 + shifted([[i, -hi]])) / (hi * hi)

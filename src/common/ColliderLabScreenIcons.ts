@@ -11,6 +11,7 @@ import { Circle, Line, Node, Path, Rectangle } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import { ScreenIcon } from "scenerystack/sim";
 import ColliderLabColors from "../ColliderLabColors.js";
+import { COLLIDER_LAB_SCREEN_ICONS_SETTINGS } from "../ColliderLabConstants.js";
 
 const W = 548;
 const H = 373;
@@ -41,30 +42,68 @@ export function createEventDisplayIcon(): ScreenIcon {
   }
   for (const radius of [24, 46, 65]) {
     detector.addChild(
-      new Circle(radius, { stroke: ColliderLabColors.trackColorProperty, lineWidth: 2, opacity: 0.35 }),
+      new Circle(radius, {
+        stroke: ColliderLabColors.trackColorProperty,
+        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH,
+        opacity: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_OPACITY,
+      }),
     );
   }
   detector.addChild(
-    new Path(new Shape().moveTo(0, 0).cubicCurveTo(28, -14, 91, -58, 112, -112), {
-      stroke: ColliderLabColors.positiveChargeColorProperty,
-      lineWidth: 7,
-      lineCap: "round",
-    }),
+    new Path(
+      new Shape()
+        .moveTo(0, 0)
+        .cubicCurveTo(
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_1_X,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_1_Y,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_2_X,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_2_Y,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_END_X,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_END_Y,
+        ),
+      {
+        stroke: ColliderLabColors.positiveChargeColorProperty,
+        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2,
+        lineCap: "round",
+      },
+    ),
   );
   detector.addChild(
-    new Path(new Shape().moveTo(0, 0).cubicCurveTo(-30, 15, -105, 42, -150, 49), {
-      stroke: ColliderLabColors.negativeChargeColorProperty,
-      lineWidth: 7,
-      lineCap: "round",
-    }),
+    new Path(
+      new Shape()
+        .moveTo(0, 0)
+        .cubicCurveTo(
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_1_X_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_1_Y_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_2_X_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_CONTROL_2_Y_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_END_X_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_END_Y_SEGMENT_2,
+        ),
+      {
+        stroke: ColliderLabColors.negativeChargeColorProperty,
+        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2,
+        lineCap: "round",
+      },
+    ),
   );
   for (const [x, y] of [
     [112, -112],
     [-150, 49],
   ] as const) {
-    detector.addChild(new Circle(9, { x, y, fill: ColliderLabColors.muonHitColorProperty }));
+    detector.addChild(
+      new Circle(COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_RADIUS, {
+        x,
+        y,
+        fill: ColliderLabColors.muonHitColorProperty,
+      }),
+    );
   }
-  detector.addChild(new Circle(7, { fill: ColliderLabColors.selectedTrackColorProperty }));
+  detector.addChild(
+    new Circle(COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_RADIUS_SEGMENT_2, {
+      fill: ColliderLabColors.selectedTrackColorProperty,
+    }),
+  );
   return iconFrom(
     new Node({
       children: [background(), detector],
@@ -74,10 +113,10 @@ export function createEventDisplayIcon(): ScreenIcon {
 
 /** A stylized invariant-mass histogram with a fitted resonance above background. */
 export function createBumpHuntIcon(): ScreenIcon {
-  const left = 60;
+  const left: number = COLLIDER_LAB_SCREEN_ICONS_SETTINGS.LEFT;
   const bottom = H - 55;
   const plotWidth = W - 110;
-  const binCount = 25;
+  const binCount: number = COLLIDER_LAB_SCREEN_ICONS_SETTINGS.BIN_COUNT;
   const binWidth = plotWidth / binCount;
   const bars = new Shape();
   const fit = new Shape();
@@ -101,15 +140,19 @@ export function createBumpHuntIcon(): ScreenIcon {
       children: [
         background(),
         new Path(bars, { fill: ColliderLabColors.histogramFillColorProperty }),
-        new Path(fit, { stroke: ColliderLabColors.fitCurveColorProperty, lineWidth: 7, lineJoin: "round" }),
+        new Path(fit, {
+          stroke: ColliderLabColors.fitCurveColorProperty,
+          lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_BUMP_HUNT_ICON_LINE_WIDTH,
+          lineJoin: "round",
+        }),
         new Path(
           new Shape()
-            .moveTo(left, 45)
+            .moveTo(left, COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_BUMP_HUNT_ICON_Y)
             .lineTo(left, bottom)
             .lineTo(W - 35, bottom),
           {
             stroke: ColliderLabColors.textColorProperty,
-            lineWidth: 4,
+            lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_BUMP_HUNT_ICON_ITEM_4_LINE_WIDTH,
           },
         ),
       ],
@@ -119,7 +162,12 @@ export function createBumpHuntIcon(): ScreenIcon {
 
 /** Head-on beams above the collider and fixed-target energy-growth curves. */
 export function createEnergyFrontierIcon(): ScreenIcon {
-  const arrows = { headHeight: 26, headWidth: 34, tailWidth: 12, stroke: null };
+  const arrows = {
+    headHeight: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.ARROWS_HEAD_HEIGHT,
+    headWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.ARROWS_HEAD_WIDTH,
+    tailWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.ARROWS_TAIL_WIDTH,
+    stroke: null,
+  };
   const burst = new Shape();
   for (let i = 0; i < 12; i++) {
     const angle = (i * Math.PI) / 6;
@@ -130,20 +178,80 @@ export function createEnergyFrontierIcon(): ScreenIcon {
     new Node({
       children: [
         background(),
-        new ArrowNode(110, 110, 210, 110, { ...arrows, fill: ColliderLabColors.positiveChargeColorProperty }),
-        new ArrowNode(438, 110, 338, 110, { ...arrows, fill: ColliderLabColors.negativeChargeColorProperty }),
-        new Circle(24, { x: 80, y: 110, fill: ColliderLabColors.positiveChargeColorProperty }),
-        new Circle(24, { x: 468, y: 110, fill: ColliderLabColors.negativeChargeColorProperty }),
-        new Path(burst, { stroke: ColliderLabColors.resonanceLabelColorProperty, lineWidth: 6 }),
-        new Path(new Shape().moveTo(70, 190).lineTo(70, 325).lineTo(490, 325), {
-          stroke: ColliderLabColors.textColorProperty,
-          lineWidth: 4,
+        new ArrowNode(
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_X,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_Y,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_X,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_Y,
+          { ...arrows, fill: ColliderLabColors.positiveChargeColorProperty },
+        ),
+        new ArrowNode(
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_X_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_Y,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_X_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_Y,
+          { ...arrows, fill: ColliderLabColors.negativeChargeColorProperty },
+        ),
+        new Circle(COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_RADIUS, {
+          x: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X,
+          y: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_Y,
+          fill: ColliderLabColors.positiveChargeColorProperty,
         }),
-        new Line(80, 315, 475, 190, { stroke: ColliderLabColors.fitCurveColorProperty, lineWidth: 8 }),
-        new Path(new Shape().moveTo(80, 315).quadraticCurveTo(205, 285, 475, 253), {
-          stroke: ColliderLabColors.histogramFillColorProperty,
-          lineWidth: 8,
+        new Circle(COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_RADIUS, {
+          x: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_ITEM_5_X,
+          y: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_Y,
+          fill: ColliderLabColors.negativeChargeColorProperty,
         }),
+        new Path(burst, {
+          stroke: ColliderLabColors.resonanceLabelColorProperty,
+          lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_LINE_WIDTH,
+        }),
+        new Path(
+          new Shape()
+            .moveTo(
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X_SEGMENT_2,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_Y_SEGMENT_2,
+            )
+            .lineTo(
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X_SEGMENT_2,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_Y_SEGMENT_3,
+            )
+            .lineTo(
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X_SEGMENT_3,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_Y_SEGMENT_3,
+            ),
+          {
+            stroke: ColliderLabColors.textColorProperty,
+            lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_ITEM_7_LINE_WIDTH,
+          },
+        ),
+        new Line(
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_X_SEGMENT_3,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_START_Y_SEGMENT_2,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_X_SEGMENT_3,
+          COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_END_Y_SEGMENT_2,
+          {
+            stroke: ColliderLabColors.fitCurveColorProperty,
+            lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_ITEM_8_LINE_WIDTH,
+          },
+        ),
+        new Path(
+          new Shape()
+            .moveTo(
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_X_MOVE_TO_Y,
+            )
+            .quadraticCurveTo(
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_CONTROL_X,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_CONTROL_Y,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_CONTROL_X_QUADRATIC_CURVE_TO_END_X,
+              COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_CONTROL_X_QUADRATIC_CURVE_TO_END_Y,
+            ),
+          {
+            stroke: ColliderLabColors.histogramFillColorProperty,
+            lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_ENERGY_FRONTIER_ICON_ITEM_9_LINE_WIDTH,
+          },
+        ),
       ],
     }),
   );

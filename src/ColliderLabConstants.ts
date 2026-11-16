@@ -400,6 +400,153 @@ export const DISPLAY_UNITS = {
   M_TO_CM: 100,
 } as const;
 
+/** Settings for bump-hunt/model/DimuonDataset.ts. */
+export const DIMUON_DATASET_SETTINGS = {
+  /** Muon rest mass, GeV/c² (PDG). */
+  MUON_MASS_GEV: 0.1056583755,
+  /** One event: an opposite-sign muon pair. */
+  BYTES_PER_MUON: 6,
+} as const;
+
+/** Settings for bump-hunt/view/PairCalculatorPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const PAIR_CALCULATOR_PANEL_SETTINGS = {
+  MASS_SQUARED_PROPERTY_DIGITS: 2, // digits
+  MASS_FIXED_DIGITS: 3, // digits
+
+  DEFAULT_DIGITS: 2,
+} as const;
+
+/** Settings for bump-hunt/view/ZFitPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const Z_FIT_PANEL_SETTINGS = {
+  MASS_VALUE_DECIMAL_PLACES: 2, // digits
+  MASS_ERROR_DECIMAL_PLACES: 2, // digits
+  WIDTH_VALUE_DECIMAL_PLACES: 2, // digits
+  WIDTH_ERROR_DECIMAL_PLACES: 2, // digits
+  PDG_TEXT_DECIMAL_PLACES: 2, // digits
+
+  TOO_FEW_TEXT_MAX_WIDTH_OFFSET: 90, // px
+
+  RESULTS_SPACING: 3,
+  CONSTRUCTOR_SPACING: 6,
+} as const;
+
+/** Settings for common/ColliderLabScreenIcons.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const COLLIDER_LAB_SCREEN_ICONS_SETTINGS = {
+  CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2: 7, // px
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_1_X_SEGMENT_2: -30, // px
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_1_Y_SEGMENT_2: 15, // px
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_2_X_SEGMENT_2: -105, // px
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_2_Y_SEGMENT_2: 42, // px
+  CREATE_EVENT_DISPLAY_ICON_END_X_SEGMENT_2: -150, // px
+  CREATE_EVENT_DISPLAY_ICON_END_Y_SEGMENT_2: 49, // px
+  CREATE_EVENT_DISPLAY_ICON_RADIUS_SEGMENT_2: 7, // px
+  CREATE_BUMP_HUNT_ICON_ITEM_4_LINE_WIDTH: 4, // px
+  CREATE_ENERGY_FRONTIER_ICON_START_X_SEGMENT_2: 438, // px
+  CREATE_ENERGY_FRONTIER_ICON_END_X_SEGMENT_2: 338, // px
+  CREATE_ENERGY_FRONTIER_ICON_ITEM_5_X: 468, // px
+  CREATE_ENERGY_FRONTIER_ICON_X_SEGMENT_2: 70, // px
+  CREATE_ENERGY_FRONTIER_ICON_Y_SEGMENT_2: 190, // px
+  CREATE_ENERGY_FRONTIER_ICON_Y_SEGMENT_3: 325, // px
+  CREATE_ENERGY_FRONTIER_ICON_X_SEGMENT_3: 490, // px
+  CREATE_ENERGY_FRONTIER_ICON_ITEM_7_LINE_WIDTH: 4, // px
+  CREATE_ENERGY_FRONTIER_ICON_START_X_SEGMENT_3: 80, // px
+  CREATE_ENERGY_FRONTIER_ICON_START_Y_SEGMENT_2: 315, // px
+  CREATE_ENERGY_FRONTIER_ICON_END_X_SEGMENT_3: 475, // px
+  CREATE_ENERGY_FRONTIER_ICON_END_Y_SEGMENT_2: 190, // px
+  CREATE_ENERGY_FRONTIER_ICON_ITEM_8_LINE_WIDTH: 8, // px
+  CREATE_ENERGY_FRONTIER_ICON_X_MOVE_TO_Y: 315, // px
+  CREATE_ENERGY_FRONTIER_ICON_CONTROL_X_QUADRATIC_CURVE_TO_END_X: 475, // px
+  CREATE_ENERGY_FRONTIER_ICON_CONTROL_X_QUADRATIC_CURVE_TO_END_Y: 253, // px
+  CREATE_ENERGY_FRONTIER_ICON_ITEM_9_LINE_WIDTH: 8, // px
+
+  CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH: 2,
+  /** Create event display icon opacity (dimensionless). */
+  CREATE_EVENT_DISPLAY_ICON_OPACITY: 0.35,
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_1_X: 28,
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_1_Y: -14,
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_2_X: 91,
+  CREATE_EVENT_DISPLAY_ICON_CONTROL_2_Y: -58,
+  CREATE_EVENT_DISPLAY_ICON_END_X: 112,
+  CREATE_EVENT_DISPLAY_ICON_END_Y: -112,
+  CREATE_EVENT_DISPLAY_ICON_RADIUS: 9,
+  LEFT: 60,
+  BIN_COUNT: 25,
+  CREATE_BUMP_HUNT_ICON_LINE_WIDTH: 7,
+  CREATE_BUMP_HUNT_ICON_Y: 45,
+  ARROWS_HEAD_HEIGHT: 26,
+  ARROWS_HEAD_WIDTH: 34,
+  ARROWS_TAIL_WIDTH: 12,
+  CREATE_ENERGY_FRONTIER_ICON_START_X: 110,
+  CREATE_ENERGY_FRONTIER_ICON_START_Y: 110,
+  CREATE_ENERGY_FRONTIER_ICON_END_X: 210,
+  CREATE_ENERGY_FRONTIER_ICON_END_Y: 110,
+  CREATE_ENERGY_FRONTIER_ICON_RADIUS: 24,
+  CREATE_ENERGY_FRONTIER_ICON_X: 80,
+  CREATE_ENERGY_FRONTIER_ICON_Y: 110,
+  CREATE_ENERGY_FRONTIER_ICON_LINE_WIDTH: 6,
+  CREATE_ENERGY_FRONTIER_ICON_CONTROL_X: 205,
+  CREATE_ENERGY_FRONTIER_ICON_CONTROL_Y: 285,
+} as const;
+
+/** Settings for common/model/nelderMead.ts. */
+export const NELDER_MEAD_SETTINGS = {
+  /** Fallback finite-difference step in parameter coordinates. */
+  HESSIAN_STEP: 1e-3,
+  /** Smallest invertible matrix pivot (dimensionless). */
+  MIN_PIVOT: 1e-300,
+  /** Default maximum iterations (dimensionless). */
+  DEFAULT_MAXIMUM_ITERATIONS: 4000,
+  /** Default tolerance (dimensionless). */
+  DEFAULT_TOLERANCE: 1e-9,
+} as const;
+
+/** Settings for energy-frontier/view/EnergyFrontierScreenView.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS = {
+  FORMAT_ENERGY_DECIMAL_PLACES: 2, // digits
+
+  REACH_GRID_X_SPACING: 12,
+  REACH_GRID_Y_SPACING: 2,
+} as const;
+
+/** Settings for event-display/view/DetectorNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const DETECTOR_NODE_SETTINGS = {
+  DRAW_OVERLAYS_LINE_WIDTH: 2,
+} as const;
+
+/** Settings for event-display/view/MeasurementPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+export const MEASUREMENT_PANEL_SETTINGS = {
+  SAGITTA_DECIMAL_PLACES: 2, // digits
+  KAON_PT_DECIMAL_PLACES: 2, // digits
+  PROPER_TIME_DECIMAL_PLACES: 2, // digits
+  ESTIMATE_DECIMAL_PLACES: 2, // digits
+
+  CONSTRUCTOR_RADIUS: 3, // px
+  CONSTRUCTOR_SIGNIFICANT_FIGURES: 3, // digits
+
+  K_BOX_SPACING: 3,
+} as const;
+
+/** Layout lengths in px; precision values count digits; factors are dimensionless. */
+export const SQRT_S_CHART_NODE_SETTINGS = {
+  CONSTRUCTOR_CENTER_X_FACTOR: 10, // dimensionless
+  CONSTRUCTOR_CENTER_Y_FACTOR: 10, // dimensionless
+} as const;
+
+/** Layout lengths in px; precision values count digits; factors are dimensionless. */
+export const MASS_SPECTRUM_CHART_NODE_SETTINGS = {
+  DRAW_LABELS_TOP_OFFSET: 6, // px
+} as const;
+
+/** Numerical settings; units are specified per value. */
+export const RANDOM_NUMERICS = {
+  /** Floor for a uniform variate before taking its logarithm (dimensionless). */
+  MIN_UNIFORM: 1e-12,
+  /** Number of possible unsigned 32-bit random states (2^32). */
+  UINT32_STATES: 4294967296,
+  /** Mulberry32 integer state increment. */
+  STATE_INCREMENT: 0x6d2b79f5,
+} as const;
+
 ColliderLabNamespace.register("ColliderLabConstants", {
   SCREEN_VIEW_MARGIN,
   PANEL_CORNER_RADIUS,

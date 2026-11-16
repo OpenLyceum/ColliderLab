@@ -1,3 +1,4 @@
+import { MEASUREMENT_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * MeasurementPanel.ts
  *
@@ -88,7 +89,7 @@ export class MeasurementPanel extends ColliderLabPanel {
       lineWrap: width - EVENT_DISPLAY_LAYOUT.PANEL_CONTENT_INSET,
     });
     const kBox = new VBox({
-      spacing: 3,
+      spacing: MEASUREMENT_PANEL_SETTINGS.K_BOX_SPACING,
       align: "left",
       children: [kTitle, flight, kaonPt, properTime, bankButton, estimate, note],
     });
@@ -113,19 +114,26 @@ export class MeasurementPanel extends ColliderLabPanel {
           hits.string = fill(strings.hitsPatternStringProperty.value, { count: `${track.hits.length}` });
           fit.string = measurement.fit
             ? fill(strings.fitPatternStringProperty.value, {
-                radius: measurement.fit.radius.toPrecision(3),
-                pt: (measurement.fitPt ?? 0).toPrecision(3),
+                radius: measurement.fit.radius.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_RADIUS),
+                pt: (measurement.fitPt ?? 0).toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
               })
             : "";
           sagitta.string = measurement.sagitta
             ? fill(strings.sagittaPatternStringProperty.value, {
-                chord: measurement.sagitta.chord.toFixed(2),
-                sagitta: (measurement.sagitta.sagitta * DISPLAY_UNITS.M_TO_MM).toPrecision(3),
-                pt: measurement.sagittaPt === null ? "∞" : measurement.sagittaPt.toPrecision(3),
+                chord: measurement.sagitta.chord.toFixed(MEASUREMENT_PANEL_SETTINGS.SAGITTA_DECIMAL_PLACES),
+                sagitta: (measurement.sagitta.sagitta * DISPLAY_UNITS.M_TO_MM).toPrecision(
+                  MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES,
+                ),
+                pt:
+                  measurement.sagittaPt === null
+                    ? "∞"
+                    : measurement.sagittaPt.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
               })
             : "";
           truth.string = showTruth
-            ? fill(strings.truePatternStringProperty.value, { pt: measurement.truePt.toPrecision(3) })
+            ? fill(strings.truePatternStringProperty.value, {
+                pt: measurement.truePt.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
+              })
             : "";
         }
         kBox.visible = kShort !== null && (mode === "explore" || showTruth);
@@ -134,11 +142,13 @@ export class MeasurementPanel extends ColliderLabPanel {
             value: (kShort.flightLength * DISPLAY_UNITS.M_TO_CM).toFixed(1),
           });
           kaonPt.string = fill(strings.kaonPtPatternStringProperty.value, {
-            value: kShort.pt.toFixed(2),
-            gb: kShort.gammaBeta.toFixed(2),
+            value: kShort.pt.toFixed(MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
+            gb: kShort.gammaBeta.toFixed(MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
           });
           properTime.string = fill(strings.properTimePatternStringProperty.value, {
-            value: (kShort.properTime / K_SHORT.DISPLAY_TIME_SCALE).toFixed(2),
+            value: (kShort.properTime / K_SHORT.DISPLAY_TIME_SCALE).toFixed(
+              MEASUREMENT_PANEL_SETTINGS.PROPER_TIME_DECIMAL_PLACES,
+            ),
           });
         }
         bankButton.enabled = kShort !== null && !banked;
@@ -148,7 +158,7 @@ export class MeasurementPanel extends ColliderLabPanel {
             ? ""
             : fill(strings.lifetimePatternStringProperty.value, {
                 count: `${times.length}`,
-                value: (mean / K_SHORT.DISPLAY_TIME_SCALE).toFixed(2),
+                value: (mean / K_SHORT.DISPLAY_TIME_SCALE).toFixed(MEASUREMENT_PANEL_SETTINGS.ESTIMATE_DECIMAL_PLACES),
               });
       },
     );

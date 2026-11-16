@@ -1,3 +1,4 @@
+import { DIMUON_DATASET_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * DimuonDataset.ts
  *
@@ -13,7 +14,7 @@
 import { FourVector } from "../../common/model/FourVector.js";
 
 /** Muon rest mass, GeV/c² (PDG). */
-const MUON_MASS_GEV = 0.1056583755;
+const MUON_MASS_GEV: number = DIMUON_DATASET_SETTINGS.MUON_MASS_GEV;
 
 /** Shape of the packed JSON module. Exported for tests. */
 export type PackedDimuons = {
@@ -52,7 +53,7 @@ function decodeBase64(text: string): Uint8Array {
   return bytes;
 }
 
-const BYTES_PER_MUON = 6;
+const BYTES_PER_MUON: number = DIMUON_DATASET_SETTINGS.BYTES_PER_MUON;
 const BYTES_PER_EVENT = 2 * BYTES_PER_MUON;
 
 export class DimuonDataset {
