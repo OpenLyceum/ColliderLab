@@ -3,12 +3,14 @@
  *
  * Screen summary; current details compare the two √s values.
  */
+
 import { DerivedProperty, PatternStringProperty } from "scenerystack/axon";
+import { toFixed } from "scenerystack/dot";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { EnergyFrontierModel } from "../model/EnergyFrontierModel.js";
 
-const plain = (v: number) => (v >= 1e4 ? v.toExponential(1) : v.toFixed(1));
+const plain = (v: number) => (v >= 1e4 ? v.toExponential(1) : toFixed(v, 1));
 
 export class EnergyFrontierScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: EnergyFrontierModel) {

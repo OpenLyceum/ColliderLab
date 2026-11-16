@@ -1,3 +1,4 @@
+import { toFixed } from "scenerystack/dot";
 import { Z_FIT_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * ZFitPanel.ts
@@ -63,11 +64,11 @@ export class ZFitPanel extends ColliderLabPanel {
 
     const pick = (f: (r: NonNullable<typeof model.fitResultProperty.value>) => string) =>
       new DerivedProperty([model.fitResultProperty], (r) => (r ? f(r) : "—"));
-    const massValue = pick((r) => r.mass.toFixed(Z_FIT_PANEL_SETTINGS.MASS_VALUE_DECIMAL_PLACES));
-    const massError = pick((r) => r.massError.toFixed(Z_FIT_PANEL_SETTINGS.MASS_ERROR_DECIMAL_PLACES));
-    const widthValue = pick((r) => r.width.toFixed(Z_FIT_PANEL_SETTINGS.WIDTH_VALUE_DECIMAL_PLACES));
-    const widthError = pick((r) => r.widthError.toFixed(Z_FIT_PANEL_SETTINGS.WIDTH_ERROR_DECIMAL_PLACES));
-    const lifetimeValue = pick((r) => (r.lifetime / Z_FIT.DISPLAY_LIFETIME_SCALE).toFixed(1));
+    const massValue = pick((r) => toFixed(r.mass, Z_FIT_PANEL_SETTINGS.MASS_VALUE_DECIMAL_PLACES));
+    const massError = pick((r) => toFixed(r.massError, Z_FIT_PANEL_SETTINGS.MASS_ERROR_DECIMAL_PLACES));
+    const widthValue = pick((r) => toFixed(r.width, Z_FIT_PANEL_SETTINGS.WIDTH_VALUE_DECIMAL_PLACES));
+    const widthError = pick((r) => toFixed(r.widthError, Z_FIT_PANEL_SETTINGS.WIDTH_ERROR_DECIMAL_PLACES));
+    const lifetimeValue = pick((r) => toFixed(r.lifetime / Z_FIT.DISPLAY_LIFETIME_SCALE, 1));
 
     const massText = new Text(
       new PatternStringProperty(strings.fitMassPatternStringProperty, { value: massValue, error: massError }),
@@ -83,8 +84,8 @@ export class ZFitPanel extends ColliderLabPanel {
     );
     const pdgText = new Text(
       new PatternStringProperty(strings.fitPdgPatternStringProperty, {
-        mass: PDG_Z_MASS_GEV.toFixed(Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
-        width: PDG_Z_WIDTH_GEV.toFixed(Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
+        mass: toFixed(PDG_Z_MASS_GEV, Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
+        width: toFixed(PDG_Z_WIDTH_GEV, Z_FIT_PANEL_SETTINGS.PDG_TEXT_DECIMAL_PLACES),
       }),
       { ...textOptions, font: FONTS.CREDIT, opacity: BUMP_HUNT_LAYOUT.PDG_OPACITY },
     );

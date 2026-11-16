@@ -4,7 +4,9 @@
  * Screen summary; current details count the tracks and deposits and give
  * the missing transverse momentum.
  */
+
 import { DerivedProperty, PatternStringProperty } from "scenerystack/axon";
+import { toFixed } from "scenerystack/dot";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { EventDisplayModel } from "../model/EventDisplayModel.js";
@@ -18,7 +20,9 @@ export class EventDisplayScreenSummaryContent extends ScreenSummaryContent {
       currentDetailsContent: new PatternStringProperty(a11y.currentDetailsPatternStringProperty, {
         tracks: new DerivedProperty([model.eventProperty], (e) => e.tracks.length),
         deposits: new DerivedProperty([model.eventProperty], (e) => e.deposits.length),
-        missing: new DerivedProperty([model.eventProperty], (e) => Math.hypot(e.missingPt.x, e.missingPt.y).toFixed(0)),
+        missing: new DerivedProperty([model.eventProperty], (e) =>
+          toFixed(Math.hypot(e.missingPt.x, e.missingPt.y), 0),
+        ),
       }),
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });

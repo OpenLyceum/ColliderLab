@@ -1,3 +1,4 @@
+import { toFixed } from "scenerystack/dot";
 import { PAIR_CALCULATOR_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * PairCalculatorPanel.ts
@@ -46,7 +47,7 @@ export class PairCalculatorPanel extends ColliderLabPanel {
       return event.muons[0].fourVector.plus(event.muons[1].fourVector);
     });
     const fixed = (value: number, digits: number = PAIR_CALCULATOR_PANEL_SETTINGS.DEFAULT_DIGITS): string =>
-      value.toFixed(digits);
+      toFixed(value, digits);
     const massSquaredProperty = new DerivedProperty([sumProperty], (sum) =>
       sum ? fixed(sum.mass ** 2, PAIR_CALCULATOR_PANEL_SETTINGS.MASS_SQUARED_PROPERTY_DIGITS) : "—",
     );

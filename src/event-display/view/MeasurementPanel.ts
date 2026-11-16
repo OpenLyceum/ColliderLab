@@ -1,3 +1,4 @@
+import { toFixed } from "scenerystack/dot";
 import { MEASUREMENT_PANEL_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * MeasurementPanel.ts
@@ -120,7 +121,7 @@ export class MeasurementPanel extends ColliderLabPanel {
             : "";
           sagitta.string = measurement.sagitta
             ? fill(strings.sagittaPatternStringProperty.value, {
-                chord: measurement.sagitta.chord.toFixed(MEASUREMENT_PANEL_SETTINGS.SAGITTA_DECIMAL_PLACES),
+                chord: toFixed(measurement.sagitta.chord, MEASUREMENT_PANEL_SETTINGS.SAGITTA_DECIMAL_PLACES),
                 sagitta: (measurement.sagitta.sagitta * DISPLAY_UNITS.M_TO_MM).toPrecision(
                   MEASUREMENT_PANEL_SETTINGS.PT_SIGNIFICANT_FIGURES,
                 ),
@@ -139,14 +140,15 @@ export class MeasurementPanel extends ColliderLabPanel {
         kBox.visible = kShort !== null && (mode === "explore" || showTruth);
         if (kShort) {
           flight.string = fill(strings.flightPatternStringProperty.value, {
-            value: (kShort.flightLength * DISPLAY_UNITS.M_TO_CM).toFixed(1),
+            value: toFixed(kShort.flightLength * DISPLAY_UNITS.M_TO_CM, 1),
           });
           kaonPt.string = fill(strings.kaonPtPatternStringProperty.value, {
-            value: kShort.pt.toFixed(MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
-            gb: kShort.gammaBeta.toFixed(MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
+            value: toFixed(kShort.pt, MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
+            gb: toFixed(kShort.gammaBeta, MEASUREMENT_PANEL_SETTINGS.KAON_PT_DECIMAL_PLACES),
           });
           properTime.string = fill(strings.properTimePatternStringProperty.value, {
-            value: (kShort.properTime / K_SHORT.DISPLAY_TIME_SCALE).toFixed(
+            value: toFixed(
+              kShort.properTime / K_SHORT.DISPLAY_TIME_SCALE,
               MEASUREMENT_PANEL_SETTINGS.PROPER_TIME_DECIMAL_PLACES,
             ),
           });
@@ -158,7 +160,7 @@ export class MeasurementPanel extends ColliderLabPanel {
             ? ""
             : fill(strings.lifetimePatternStringProperty.value, {
                 count: `${times.length}`,
-                value: (mean / K_SHORT.DISPLAY_TIME_SCALE).toFixed(MEASUREMENT_PANEL_SETTINGS.ESTIMATE_DECIMAL_PLACES),
+                value: toFixed(mean / K_SHORT.DISPLAY_TIME_SCALE, MEASUREMENT_PANEL_SETTINGS.ESTIMATE_DECIMAL_PLACES),
               });
       },
     );

@@ -1,3 +1,4 @@
+import { toFixed } from "scenerystack/dot";
 import { ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * EnergyFrontierScreenView.ts
@@ -34,11 +35,11 @@ const { RIGHT_WIDTH } = ENERGY_FRONTIER_LAYOUT;
 function formatEnergy(value: number): string {
   if (value < ENERGY_FRONTIER.SCIENTIFIC_THRESHOLD) {
     return value < ENERGY_FRONTIER.SMALL_VALUE_THRESHOLD
-      ? value.toFixed(ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS.FORMAT_ENERGY_DECIMAL_PLACES)
-      : value.toFixed(0);
+      ? toFixed(value, ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS.FORMAT_ENERGY_DECIMAL_PLACES)
+      : toFixed(value, 0);
   }
   const exponent = Math.floor(Math.log10(value));
-  return `${(value / 10 ** exponent).toFixed(1)} × 10<sup>${exponent}</sup>`;
+  return `${toFixed(value / 10 ** exponent, 1)} × 10<sup>${exponent}</sup>`;
 }
 
 export type EnergyFrontierScreenViewOptions = ScreenViewOptions;

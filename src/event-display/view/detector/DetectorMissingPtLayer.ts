@@ -4,7 +4,7 @@
  * Missing-pT arrow and numeric label.
  */
 
-import { Vector2 } from "scenerystack/dot";
+import { toFixed, Vector2 } from "scenerystack/dot";
 import { Node, Text } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import ColliderLabColors from "../../../ColliderLabColors.js";
@@ -33,7 +33,7 @@ export class DetectorMissingPtLayer extends Node {
         opacity: DETECTOR_VIEW.ARROW_OPACITY,
         pickable: false,
       });
-      const label = new Text(strings.missingPtPatternStringProperty.value.replace("{{value}}", missingPt.toFixed(0)), {
+      const label = new Text(strings.missingPtPatternStringProperty.value.replace("{{value}}", toFixed(missingPt, 0)), {
         font: FONTS.MISSING_PT,
         fill: ColliderLabColors.missingPtColorProperty,
         center: tip
