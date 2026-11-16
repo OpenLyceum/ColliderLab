@@ -14,7 +14,7 @@ import { DIMUON_DATASET_SETTINGS } from "../../ColliderLabConstants.js";
 import { FourVector } from "../../common/model/FourVector.js";
 
 /** Muon rest mass, GeV/c² (PDG). */
-const MUON_MASS_GEV: number = DIMUON_DATASET_SETTINGS.MUON_MASS_GEV;
+const MUON_MASS_GEV: number = DIMUON_DATASET_SETTINGS.MUON_MASS_GEV_ENCODED;
 
 /** Shape of the packed JSON module. Exported for tests. */
 export type PackedDimuons = {

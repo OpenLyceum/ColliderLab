@@ -78,7 +78,8 @@ export const CONTROLS = {
 
 /**
  * PDG 2024 rest masses and related particle data (GeV/c² unless noted).
- * DimuonDataset keeps its own encoding mass so packed CMS bytes stay bit-stable.
+ * DimuonDataset uses MUON_MASS_GEV_ENCODED (more digits) so packed CMS bytes stay bit-stable;
+ * MASS.MUON is the rounded value for event-display physics.
  */
 export const MASS = {
   MUON: 0.10566,
@@ -402,8 +403,12 @@ export const DISPLAY_UNITS = {
 
 /** Settings for bump-hunt/model/DimuonDataset.ts. */
 export const DIMUON_DATASET_SETTINGS = {
-  /** Muon rest mass, GeV/c² (PDG). */
-  MUON_MASS_GEV: 0.1056583755,
+  /**
+   * Muon rest mass used when packing/decoding CMS dimuon bytes (GeV/c²).
+   * More precise than MASS.MUON so the offline-encoded JSON stays bit-stable;
+   * use MASS.MUON for event-display physics.
+   */
+  MUON_MASS_GEV_ENCODED: 0.1056583755,
   /** One event: an opposite-sign muon pair. */
   BYTES_PER_MUON: 6,
 } as const;
@@ -520,7 +525,7 @@ export const MEASUREMENT_PANEL_SETTINGS = {
   PROPER_TIME_DECIMAL_PLACES: 2, // digits
   ESTIMATE_DECIMAL_PLACES: 2, // digits
 
-  CONSTRUCTOR_RADIUS: 3, // px
+  FIT_RADIUS_PRECISION: 3, // digits
   CONSTRUCTOR_SIGNIFICANT_FIGURES: 3, // digits
 
   K_BOX_SPACING: 3,
@@ -528,8 +533,8 @@ export const MEASUREMENT_PANEL_SETTINGS = {
 
 /** Layout lengths in px; precision values count digits; factors are dimensionless. */
 export const SQRT_S_CHART_NODE_SETTINGS = {
-  CONSTRUCTOR_CENTER_X_FACTOR: 10, // dimensionless
-  CONSTRUCTOR_CENTER_Y_FACTOR: 10, // dimensionless
+  /** Base for decade tick labels on the log–log √s chart (10^d). */
+  LOG_DECADE_BASE: 10, // dimensionless
 } as const;
 
 /** Layout lengths in px; precision values count digits; factors are dimensionless. */

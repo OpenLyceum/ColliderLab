@@ -114,7 +114,7 @@ export class MeasurementPanel extends ColliderLabPanel {
           hits.string = fill(strings.hitsPatternStringProperty.value, { count: `${track.hits.length}` });
           fit.string = measurement.fit
             ? fill(strings.fitPatternStringProperty.value, {
-                radius: measurement.fit.radius.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_RADIUS),
+                radius: measurement.fit.radius.toPrecision(MEASUREMENT_PANEL_SETTINGS.FIT_RADIUS_PRECISION),
                 pt: (measurement.fitPt ?? 0).toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
               })
             : "";

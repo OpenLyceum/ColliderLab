@@ -69,7 +69,7 @@ export class SqrtSChartNode extends Node {
             new RichText(`10<sup>${d}</sup>`, {
               font: FONTS.CREDIT,
               fill: ColliderLabColors.textColorProperty,
-              centerX: x(SQRT_S_CHART_NODE_SETTINGS.CONSTRUCTOR_CENTER_X_FACTOR ** d),
+              centerX: x(SQRT_S_CHART_NODE_SETTINGS.LOG_DECADE_BASE ** d),
               top: height + ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
             }),
           );
@@ -81,7 +81,7 @@ export class SqrtSChartNode extends Node {
               font: FONTS.CREDIT,
               fill: ColliderLabColors.textColorProperty,
               right: -ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,
-              centerY: y(SQRT_S_CHART_NODE_SETTINGS.CONSTRUCTOR_CENTER_Y_FACTOR ** d),
+              centerY: y(SQRT_S_CHART_NODE_SETTINGS.LOG_DECADE_BASE ** d),
             }),
           );
         }
