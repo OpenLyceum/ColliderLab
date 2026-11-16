@@ -115,24 +115,24 @@ export class MeasurementPanel extends ColliderLabPanel {
           fit.string = measurement.fit
             ? fill(strings.fitPatternStringProperty.value, {
                 radius: measurement.fit.radius.toPrecision(MEASUREMENT_PANEL_SETTINGS.FIT_RADIUS_PRECISION),
-                pt: (measurement.fitPt ?? 0).toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
+                pt: (measurement.fitPt ?? 0).toPrecision(MEASUREMENT_PANEL_SETTINGS.PT_SIGNIFICANT_FIGURES),
               })
             : "";
           sagitta.string = measurement.sagitta
             ? fill(strings.sagittaPatternStringProperty.value, {
                 chord: measurement.sagitta.chord.toFixed(MEASUREMENT_PANEL_SETTINGS.SAGITTA_DECIMAL_PLACES),
                 sagitta: (measurement.sagitta.sagitta * DISPLAY_UNITS.M_TO_MM).toPrecision(
-                  MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES,
+                  MEASUREMENT_PANEL_SETTINGS.PT_SIGNIFICANT_FIGURES,
                 ),
                 pt:
                   measurement.sagittaPt === null
                     ? "∞"
-                    : measurement.sagittaPt.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
+                    : measurement.sagittaPt.toPrecision(MEASUREMENT_PANEL_SETTINGS.PT_SIGNIFICANT_FIGURES),
               })
             : "";
           truth.string = showTruth
             ? fill(strings.truePatternStringProperty.value, {
-                pt: measurement.truePt.toPrecision(MEASUREMENT_PANEL_SETTINGS.CONSTRUCTOR_SIGNIFICANT_FIGURES),
+                pt: measurement.truePt.toPrecision(MEASUREMENT_PANEL_SETTINGS.PT_SIGNIFICANT_FIGURES),
               })
             : "";
         }

@@ -63,7 +63,7 @@ export function createEventDisplayIcon(): ScreenIcon {
         ),
       {
         stroke: ColliderLabColors.positiveChargeColorProperty,
-        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2,
+        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_TRACK_LINE_WIDTH,
         lineCap: "round",
       },
     ),
@@ -82,7 +82,7 @@ export function createEventDisplayIcon(): ScreenIcon {
         ),
       {
         stroke: ColliderLabColors.negativeChargeColorProperty,
-        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2,
+        lineWidth: COLLIDER_LAB_SCREEN_ICONS_SETTINGS.CREATE_EVENT_DISPLAY_ICON_TRACK_LINE_WIDTH,
         lineCap: "round",
       },
     ),

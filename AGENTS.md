@@ -38,7 +38,8 @@ Physics and data: [`doc/model.md`](doc/model.md). Architecture and decisions:
 | `src/event-display/model/EventGenerator.ts` | Processes, 3D decays + boosts, helix propagation, hits, deposits, missing pT |
 | `src/event-display/model/circleFit.ts` | Kåsa circle fit and sagitta |
 | `src/event-display/model/kShortMeasurement.ts` | Vertex from two circles, kaon pT, proper time |
-| `src/event-display/view/DetectorNode.ts` | Detector, tracks (pickable), deposits, overlays, missing-pT arrow, truth labels |
+| `src/event-display/view/DetectorNode.ts` | Orchestrates detector layers; pickable `trackLayer` |
+| `src/event-display/view/detector/*` | Chrome, deposits, tracks, fit overlays, missing-pT, truth labels |
 | `src/bump-hunt/model/DimuonDataset.ts` | Decodes the packed CMS events (lazy `import()`) |
 | `src/bump-hunt/model/zFit.ts` | Pseudo-Voigt + background, Poisson likelihood, τ = ħ/Γ |
 | `src/bump-hunt/view/MassSpectrumChartNode.ts` | Log–log / linear histogram, fit curve, resonance labels |

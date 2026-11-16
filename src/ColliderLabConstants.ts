@@ -432,12 +432,14 @@ export const Z_FIT_PANEL_SETTINGS = {
   TOO_FEW_TEXT_MAX_WIDTH_OFFSET: 90, // px
 
   RESULTS_SPACING: 3,
-  CONSTRUCTOR_SPACING: 6,
+  /** Vertical spacing of the panel's root VBox (px). */
+  PANEL_SPACING: 6,
 } as const;
 
 /** Settings for common/ColliderLabScreenIcons.ts. Layout lengths are in px; counts and ratios are dimensionless. */
 export const COLLIDER_LAB_SCREEN_ICONS_SETTINGS = {
-  CREATE_EVENT_DISPLAY_ICON_LINE_WIDTH_VARIANT_2: 7, // px
+  /** Stroke width for the curved charged tracks in the Event Display icon (px). */
+  CREATE_EVENT_DISPLAY_ICON_TRACK_LINE_WIDTH: 7, // px
   CREATE_EVENT_DISPLAY_ICON_CONTROL_1_X_SEGMENT_2: -30, // px
   CREATE_EVENT_DISPLAY_ICON_CONTROL_1_Y_SEGMENT_2: 15, // px
   CREATE_EVENT_DISPLAY_ICON_CONTROL_2_X_SEGMENT_2: -105, // px
@@ -513,9 +515,10 @@ export const ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS = {
   REACH_GRID_Y_SPACING: 2,
 } as const;
 
-/** Settings for event-display/view/DetectorNode.ts. Layout lengths are in px; counts and ratios are dimensionless. */
+/** Settings for event-display/view/detector overlays. Layout lengths are in px; counts and ratios are dimensionless. */
 export const DETECTOR_NODE_SETTINGS = {
-  DRAW_OVERLAYS_LINE_WIDTH: 2,
+  /** Stroke width of the displaced-vertex marker circle (px). */
+  VERTEX_MARKER_LINE_WIDTH: 2,
 } as const;
 
 /** Settings for event-display/view/MeasurementPanel.ts. Layout lengths are in px; counts and ratios are dimensionless. */
@@ -526,7 +529,8 @@ export const MEASUREMENT_PANEL_SETTINGS = {
   ESTIMATE_DECIMAL_PLACES: 2, // digits
 
   FIT_RADIUS_PRECISION: 3, // digits
-  CONSTRUCTOR_SIGNIFICANT_FIGURES: 3, // digits
+  /** Significant figures for fitted / sagitta / true pT display. */
+  PT_SIGNIFICANT_FIGURES: 3, // digits
 
   K_BOX_SPACING: 3,
 } as const;

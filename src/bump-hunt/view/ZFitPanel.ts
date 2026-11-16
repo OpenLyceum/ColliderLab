@@ -114,7 +114,7 @@ export class ZFitPanel extends ColliderLabPanel {
 
     super(
       new VBox({
-        spacing: Z_FIT_PANEL_SETTINGS.CONSTRUCTOR_SPACING,
+        spacing: Z_FIT_PANEL_SETTINGS.PANEL_SPACING,
         align: "left",
         children: [
           title,
