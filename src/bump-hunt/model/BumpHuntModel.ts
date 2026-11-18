@@ -15,7 +15,14 @@
  * spectrum.
  */
 
-import { BooleanProperty, Emitter, NumberProperty, Property, StringUnionProperty } from "scenerystack/axon";
+import {
+  BooleanProperty,
+  Emitter,
+  NumberProperty,
+  Property,
+  StringUnionProperty,
+  type TReadOnlyProperty,
+} from "scenerystack/axon";
 import type { TModel } from "scenerystack/joist";
 import { BUMP_HUNT } from "../../ColliderLabConstants.js";
 import { SeededRandom } from "../../common/model/random.js";
@@ -59,7 +66,8 @@ export class BumpHuntModel implements TModel {
   public readonly currentEventAddedProperty = new BooleanProperty(false);
   /** Events the student has histogrammed (pair + stream). */
   public readonly filledCountProperty = new NumberProperty(0);
-  public readonly fitResultProperty = new Property<ZFitResult | null>(null);
+  private readonly _fitResultProperty = new Property<ZFitResult | null>(null);
+  public readonly fitResultProperty: TReadOnlyProperty<ZFitResult | null> = this._fitResultProperty;
 
   /** Fires whenever histogram contents change, so the view redraws. */
   public readonly histogramChangedEmitter = new Emitter();
@@ -85,7 +93,7 @@ export class BumpHuntModel implements TModel {
       if (mode !== "stream") {
         this.isStreamingProperty.value = false;
       }
-      this.fitResultProperty.value = null;
+      this._fitResultProperty.value = null;
     });
     this.resolutionProperty.lazyLink(() => {
       if (this.fitResultProperty.value) {
@@ -198,7 +206,7 @@ export class BumpHuntModel implements TModel {
     this.logHistogram.clear();
     this.zHistogram.clear();
     this.filledCountProperty.reset();
-    this.fitResultProperty.reset();
+    this._fitResultProperty.reset();
     this.cursor = 0;
     this.streamCarry = 0;
     this.currentEventProperty.value = null;
@@ -208,7 +216,7 @@ export class BumpHuntModel implements TModel {
 
   /** Fits the Z peak of the displayed histogram. */
   public fitZ(): void {
-    this.fitResultProperty.value = fitZ(this.displayedZHistogram, this.resolutionProperty.value);
+    this._fitResultProperty.value = fitZ(this.displayedZHistogram, this.resolutionProperty.value);
   }
 
   public reset(): void {

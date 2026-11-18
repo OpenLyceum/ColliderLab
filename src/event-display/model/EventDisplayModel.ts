@@ -59,11 +59,14 @@ export class EventDisplayModel implements TModel {
   public readonly kShortTimesProperty = new Property<readonly number[]>([]);
   public readonly kShortBankedProperty = new BooleanProperty(false);
 
-  public readonly scoreProperty = new NumberProperty(0);
-  public readonly roundsProperty = new NumberProperty(0);
-  public readonly gameStateProperty = new StringUnionProperty<GameState>("guessing", {
+  private readonly _scoreProperty = new NumberProperty(0);
+  private readonly _roundsProperty = new NumberProperty(0);
+  private readonly _gameStateProperty = new StringUnionProperty<GameState>("guessing", {
     validValues: ["guessing", "right", "wrong"],
   });
+  public readonly scoreProperty: TReadOnlyProperty<number> = this._scoreProperty;
+  public readonly roundsProperty: TReadOnlyProperty<number> = this._roundsProperty;
+  public readonly gameStateProperty: TReadOnlyProperty<GameState> = this._gameStateProperty;
   public readonly lastGuessProperty = new Property<Process | null>(null);
 
   private readonly random: SeededRandom;
@@ -164,7 +167,7 @@ export class EventDisplayModel implements TModel {
   // ── game ──
 
   public newRound(): void {
-    this.gameStateProperty.value = "guessing";
+    this._gameStateProperty.value = "guessing";
     this.lastGuessProperty.value = null;
     this.showTruthProperty.value = false;
     this.selectedTrackProperty.value = null;
@@ -178,11 +181,11 @@ export class EventDisplayModel implements TModel {
     }
     const right = process === this.eventProperty.value.process;
     this.lastGuessProperty.value = process;
-    this.roundsProperty.value += 1;
+    this._roundsProperty.value += 1;
     if (right) {
-      this.scoreProperty.value += 1;
+      this._scoreProperty.value += 1;
     }
-    this.gameStateProperty.value = right ? "right" : "wrong";
+    this._gameStateProperty.value = right ? "right" : "wrong";
     this.showTruthProperty.value = true;
   }
 
@@ -193,9 +196,9 @@ export class EventDisplayModel implements TModel {
     this.showMissingPtProperty.reset();
     this.showTruthProperty.reset();
     this.kShortTimesProperty.reset();
-    this.scoreProperty.reset();
-    this.roundsProperty.reset();
-    this.gameStateProperty.reset();
+    this._scoreProperty.reset();
+    this._roundsProperty.reset();
+    this._gameStateProperty.reset();
     this.newEvent();
   }
 
