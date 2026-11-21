@@ -203,6 +203,9 @@ export class SqrtSChartNode extends Node {
             }),
           );
         }
+        for (const child of layer.children) {
+          child.disposeSubtree();
+        }
         layer.children = children;
       }),
     );

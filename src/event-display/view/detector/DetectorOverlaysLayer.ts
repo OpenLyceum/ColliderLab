@@ -15,6 +15,11 @@ import { type RadialScale, toScreen } from "./radialScale.js";
 
 export class DetectorOverlaysLayer extends Node {
   public redraw(model: EventDisplayModel, scale: RadialScale, event: DetectorEvent, selected: number | null): void {
+    // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
+    // Colors-property fills would otherwise keep them alive.
+    for (const child of this.children) {
+      child.disposeSubtree();
+    }
     // Selected-track overlays: fitted circle and sagitta construction.
     const overlays: Node[] = [];
     const measurement = model.measurementProperty.value;

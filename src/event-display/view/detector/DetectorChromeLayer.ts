@@ -27,6 +27,11 @@ import type { RadialScale } from "./radialScale.js";
 
 export class DetectorChromeLayer extends Node {
   public redraw(scale: RadialScale, zoomed: boolean): void {
+    // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
+    // Colors-property fills would otherwise keep them alive.
+    for (const child of this.children) {
+      child.disposeSubtree();
+    }
     const strings = StringManager.getInstance().getEventDisplayStrings();
     // An annulus drawn as one thick stroked circle.
     const ring = (inner: number, outer: number, color: TReadOnlyProperty<Color>) =>

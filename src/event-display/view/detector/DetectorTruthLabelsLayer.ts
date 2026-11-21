@@ -14,6 +14,11 @@ import { type RadialScale, toScreen } from "./radialScale.js";
 
 export class DetectorTruthLabelsLayer extends Node {
   public redraw(scale: RadialScale, event: DetectorEvent, zoomed: boolean, showTruth: boolean): void {
+    // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
+    // Colors-property fills would otherwise keep them alive.
+    for (const child of this.children) {
+      child.disposeSubtree();
+    }
     if (!showTruth) {
       this.children = [];
       return;

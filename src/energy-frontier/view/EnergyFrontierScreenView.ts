@@ -140,6 +140,9 @@ export class EnergyFrontierScreenView extends ScreenView {
           "{{value}}",
           formatEnergy(equivalent),
         );
+        for (const child of reachGrid.children) {
+          child.disposeSubtree();
+        }
         reachGrid.rows = [
           [
             new Text("", { font: FONTS.PANEL }),

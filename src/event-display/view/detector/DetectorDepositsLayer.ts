@@ -14,6 +14,11 @@ import { type RadialScale, toScreen } from "./radialScale.js";
 
 export class DetectorDepositsLayer extends Node {
   public redraw(scale: RadialScale, event: DetectorEvent, zoomed: boolean): void {
+    // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
+    // Colors-property fills would otherwise keep them alive.
+    for (const child of this.children) {
+      child.disposeSubtree();
+    }
     if (zoomed) {
       this.children = [];
       return;

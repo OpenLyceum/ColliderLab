@@ -46,7 +46,7 @@ export class DetectorTracksLayer extends Node {
     selected: number | null,
   ): void {
     for (const child of this.children) {
-      child.dispose();
+      child.disposeSubtree();
     }
     const trackNodes = event.tracks.map((track, index) => {
       const particle = event.particles[track.particleId];

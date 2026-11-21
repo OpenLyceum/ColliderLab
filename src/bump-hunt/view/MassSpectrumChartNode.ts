@@ -231,6 +231,9 @@ export class MassSpectrumChartNode extends Node {
     };
     ticksFor(xAxis, true);
     ticksFor(yAxis, false);
+    for (const child of this.gridLayer.children) {
+      child.disposeSubtree();
+    }
     this.gridLayer.children = gridChildren;
   }
 
@@ -267,6 +270,9 @@ export class MassSpectrumChartNode extends Node {
           text,
         );
       }
+    }
+    for (const child of this.labelLayer.children) {
+      child.disposeSubtree();
     }
     this.labelLayer.children = labels;
   }

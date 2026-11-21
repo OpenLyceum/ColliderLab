@@ -78,6 +78,9 @@ export class PairCalculatorPanel extends ColliderLabPanel {
         row(strings.muon2StringProperty.value, null, "");
       }
       row(strings.sumStringProperty.value, sum, sum ? "0" : "");
+      for (const child of grid.children) {
+        child.disposeSubtree();
+      }
       grid.rows = rows;
     };
     model.currentEventProperty.link(rebuild);

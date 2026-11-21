@@ -15,6 +15,11 @@ import type { DetectorEvent } from "../../model/EventGenerator.js";
 
 export class DetectorMissingPtLayer extends Node {
   public redraw(model: EventDisplayModel, event: DetectorEvent, outerPixels: number): void {
+    // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
+    // Colors-property fills would otherwise keep them alive.
+    for (const child of this.children) {
+      child.disposeSubtree();
+    }
     const strings = StringManager.getInstance().getEventDisplayStrings();
     const missing = event.missingPt;
     const missingPt = Math.hypot(missing.x, missing.y);
