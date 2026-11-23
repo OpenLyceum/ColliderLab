@@ -33,7 +33,6 @@ export class SqrtSChartNode extends Node {
   public constructor(model: EnergyFrontierModel, width: number, height: number) {
     super();
     const strings = StringManager.getInstance().getEnergyFrontierStrings();
-    const thresholdNames = strings as unknown as Record<string, { value: string } | undefined>;
     const frame = new Rectangle(0, 0, width, height, {
       fill: ColliderLabColors.chartBackgroundColorProperty,
       stroke: ColliderLabColors.panelBorderColorProperty,
@@ -93,7 +92,7 @@ export class SqrtSChartNode extends Node {
               lineDash: [...ENERGY_FRONTIER_LAYOUT.THRESHOLD_DASH],
               opacity: ENERGY_FRONTIER_LAYOUT.THRESHOLD_OPACITY,
             }),
-            new Text(thresholdNames[`${threshold.id}StringProperty`]?.value ?? threshold.id, {
+            new Text(strings[`${threshold.id}StringProperty`]?.value ?? threshold.id, {
               font: FONTS.CREDIT,
               fill: ColliderLabColors.resonanceLabelColorProperty,
               right: width - ENERGY_FRONTIER_LAYOUT.TICK_OFFSET,

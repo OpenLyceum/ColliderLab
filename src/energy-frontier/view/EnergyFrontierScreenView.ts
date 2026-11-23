@@ -53,7 +53,6 @@ export class EnergyFrontierScreenView extends ScreenView {
     super(options);
     const strings = StringManager.getInstance().getEnergyFrontierStrings();
     const a11y = StringManager.getInstance().getEnergyFrontierA11yStrings();
-    const thresholdNames = strings as unknown as Record<string, { value: string } | undefined>;
     const text = (s: typeof strings.beamTitleStringProperty, bold = false) =>
       new Text(s, {
         font: bold ? FONTS.PANEL_BOLD : FONTS.PANEL,
@@ -150,7 +149,7 @@ export class EnergyFrontierScreenView extends ScreenView {
             text(strings.colliderCurveStringProperty),
           ],
           ...THRESHOLDS.map((t) => [
-            new Text(thresholdNames[`${t.id}StringProperty`]?.value ?? t.id, {
+            new Text(strings[`${t.id}StringProperty`]?.value ?? t.id, {
               font: FONTS.PANEL,
               fill: ColliderLabColors.textColorProperty,
             }),
