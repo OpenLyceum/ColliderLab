@@ -7,7 +7,7 @@
  */
 
 import { DerivedProperty, NumberProperty, PatternStringProperty } from "scenerystack/axon";
-import { Range } from "scenerystack/dot";
+import { Range, roundSymmetric } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { HBox, Node, Text, VBox } from "scenerystack/scenery";
 import { PlayPauseButton, ResetAllButton } from "scenerystack/scenery-phet";
@@ -207,14 +207,14 @@ export class BumpHuntScreenView extends ScreenView {
     });
     const rateText = new Text(
       new PatternStringProperty(strings.eventsPerSecondPatternStringProperty, {
-        value: new DerivedProperty([model.streamRateProperty], (r) => Math.round(r).toLocaleString()),
+        value: new DerivedProperty([model.streamRateProperty], (r) => roundSymmetric(r).toLocaleString()),
       }),
       { font: FONTS.PANEL, fill: ColliderLabColors.textColorProperty },
     );
     const rateStep = BUMP_HUNT.LOG_RATE_KEYBOARD_STEP;
     const rateSlider = new HSlider(rateExponentProperty, rateExponentRange, {
       ...COLLIDER_LAB_SLIDER_OPTIONS,
-      constrainValue: (exponent: number) => Math.round(exponent / rateStep) * rateStep,
+      constrainValue: (exponent: number) => roundSymmetric(exponent / rateStep) * rateStep,
       keyboardStep: rateStep,
       shiftKeyboardStep: rateStep,
       pageKeyboardStep: BUMP_HUNT.LOG_RATE_PAGE_STEP,

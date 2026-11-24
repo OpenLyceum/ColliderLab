@@ -1,4 +1,4 @@
-import { toFixed } from "scenerystack/dot";
+import { roundSymmetric, toFixed } from "scenerystack/dot";
 import { ENERGY_FRONTIER_SCREEN_VIEW_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * EnergyFrontierScreenView.ts
@@ -100,7 +100,7 @@ export class EnergyFrontierScreenView extends ScreenView {
     const slider = new HSlider(model.logEnergyProperty, LOG_ENERGY_RANGE, {
       ...COLLIDER_LAB_SLIDER_OPTIONS,
       constrainValue: (v: number) =>
-        Math.round(v / ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP) * ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP,
+        roundSymmetric(v / ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP) * ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP,
       keyboardStep: ENERGY_FRONTIER.LOG_SLIDER_KEYBOARD_STEP,
       pageKeyboardStep: ENERGY_FRONTIER.LOG_SLIDER_PAGE_STEP,
       accessibleName: a11y.controls.energyStringProperty,

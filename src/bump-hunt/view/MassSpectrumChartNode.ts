@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { MASS_SPECTRUM_CHART_NODE_SETTINGS } from "../../ColliderLabConstants.js";
 /**
  * MassSpectrumChartNode.ts
@@ -65,7 +66,7 @@ function tickValues(axis: Axis, target: number): { value: number; labelled: bool
 
 function formatTick(value: number): string {
   if (value >= 1) {
-    return `${Math.round(value)}`;
+    return `${roundSymmetric(value)}`;
   }
   return `${Number(value.toPrecision(1))}`;
 }
