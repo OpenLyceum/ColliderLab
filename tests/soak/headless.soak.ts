@@ -18,17 +18,18 @@ import ColliderLabColors from "../../src/ColliderLabColors.js";
 import { EnergyFrontierScreen } from "../../src/energy-frontier/EnergyFrontierScreen.js";
 import { EventDisplayScreen } from "../../src/event-display/EventDisplayScreen.js";
 import { StringManager } from "../../src/i18n/StringManager.js";
-import { colliderLabPreferences } from "../../src/preferences/ColliderLabPreferencesModel.js";
+import { ColliderLabPreferencesModel } from "../../src/preferences/ColliderLabPreferencesModel.js";
 import { describeHeadlessSoak } from "../helpers/headlessSoak.js";
 
 function buildSim() {
   const stringManager = StringManager.getInstance();
 
   // Simulation-specific preferences; initial values come from colliderLabQueryParameters.
-  const simPreferences = colliderLabPreferences;
+  const simPreferences = new ColliderLabPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
   const screens = [
     new EventDisplayScreen({
+      preferences: simPreferences,
       name: stringManager.getScreenNames().eventDisplayStringProperty,
       tandem: Tandem.ROOT.createTandem("eventDisplayScreen"),
       backgroundColorProperty: ColliderLabColors.backgroundColorProperty,

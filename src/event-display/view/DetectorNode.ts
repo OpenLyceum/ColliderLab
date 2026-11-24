@@ -15,7 +15,6 @@ import { Multilink, type TReadOnlyProperty } from "scenerystack/axon";
 import { Shape } from "scenerystack/kite";
 import { Node } from "scenerystack/scenery";
 import { DETECTOR_VIEW } from "../../ColliderLabConstants.js";
-import { colliderLabPreferences } from "../../preferences/ColliderLabPreferencesModel.js";
 import type { EventDisplayModel } from "../model/EventDisplayModel.js";
 import { DetectorChromeLayer } from "./detector/DetectorChromeLayer.js";
 import { DetectorDepositsLayer } from "./detector/DetectorDepositsLayer.js";
@@ -30,7 +29,12 @@ export class DetectorNode extends Node {
   /** Pickable track paths, in track order (for selection by keyboard too). */
   public readonly trackLayer: DetectorTracksLayer;
 
-  public constructor(model: EventDisplayModel, zoomProperty: TReadOnlyProperty<boolean>, outerPixels: number) {
+  public constructor(
+    model: EventDisplayModel,
+    zoomProperty: TReadOnlyProperty<boolean>,
+    outerPixels: number,
+    showDetectorLabelsProperty: TReadOnlyProperty<boolean>,
+  ) {
     super();
     const detectorLayer = new DetectorChromeLayer();
     const depositLayer = new DetectorDepositsLayer();
@@ -47,7 +51,7 @@ export class DetectorNode extends Node {
       const scale = makeScale(outerPixels, zoomed);
       const event = model.eventProperty.value;
       const selected = model.selectedTrackProperty.value;
-      detectorLayer.redraw(scale, zoomed);
+      detectorLayer.redraw(showDetectorLabelsProperty.value, scale, zoomed);
       depositLayer.redraw(scale, event, zoomed);
       this.trackLayer.redraw(model, scale, event, zoomed, selected);
       overlayLayer.redraw(model, scale, event, selected);
@@ -64,7 +68,7 @@ export class DetectorNode extends Node {
           model.showTruthProperty,
           zoomProperty,
           model.measurementProperty,
-          colliderLabPreferences.showDetectorLabelsProperty,
+          showDetectorLabelsProperty,
         ],
         draw,
       ),

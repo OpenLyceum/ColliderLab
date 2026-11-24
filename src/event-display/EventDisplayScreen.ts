@@ -9,18 +9,20 @@
  * icons come from createEventDisplayIcon() in src/common/ColliderLabScreenIcons.ts
  * (see doc/multi-screen.md).
  */
+
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import type { ScreenOptions } from "scenerystack/sim";
 import { Screen } from "scenerystack/sim";
 import type { Tandem } from "scenerystack/tandem";
 import ColliderLabColors from "../ColliderLabColors.js";
 import { createEventDisplayIcon } from "../common/ColliderLabScreenIcons.js";
+import type { ColliderLabPreferencesModel } from "../preferences/ColliderLabPreferencesModel.js";
 import { EventDisplayModel } from "./model/EventDisplayModel.js";
 import { EventDisplayKeyboardHelpContent } from "./view/EventDisplayKeyboardHelpContent.js";
 import { EventDisplayScreenView } from "./view/EventDisplayScreenView.js";
 
 // Require tandem to be explicit — accidental omission would break PhET-iO.
-type EventDisplayScreenOptions = ScreenOptions & { tandem: Tandem };
+type EventDisplayScreenOptions = ScreenOptions & { tandem: Tandem; preferences: ColliderLabPreferencesModel };
 
 export class EventDisplayScreen extends Screen<EventDisplayModel, EventDisplayScreenView> {
   public constructor(options: EventDisplayScreenOptions) {
@@ -29,7 +31,7 @@ export class EventDisplayScreen extends Screen<EventDisplayModel, EventDisplaySc
       () => new EventDisplayModel(),
       // View factory — receives the model instance
       (model) =>
-        new EventDisplayScreenView(model, {
+        new EventDisplayScreenView(model, options.preferences, {
           tandem: options.tandem.createTandem("view"),
         }),
       optionize<EventDisplayScreenOptions, EmptySelfOptions, ScreenOptions>()(

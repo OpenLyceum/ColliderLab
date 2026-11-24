@@ -45,7 +45,7 @@ Physics and data: [`doc/model.md`](doc/model.md). Architecture and decisions:
 | `src/bump-hunt/view/MassSpectrumChartNode.ts` | Log–log / linear histogram, fit curve, resonance labels |
 | `src/energy-frontier/model/EnergyFrontierModel.ts` | √s formulas, thresholds, machines |
 | `src/common/model/{FourVector,nelderMead,random}.ts` | Shared kinematics, minimiser, seeded RNG |
-| `src/preferences/ColliderLabPreferencesModel.ts` | `showDetectorLabels` preference (shared singleton) |
+| `src/preferences/ColliderLabPreferencesModel.ts` | `showDetectorLabels` preference |
 
 ## Common components
 

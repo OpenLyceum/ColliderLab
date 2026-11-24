@@ -11,7 +11,6 @@ import { Circle, Node, Text } from "scenerystack/scenery";
 import ColliderLabColors from "../../../ColliderLabColors.js";
 import { DETECTOR_GEOMETRY, DETECTOR_VIEW, FONTS } from "../../../ColliderLabConstants.js";
 import { StringManager } from "../../../i18n/StringManager.js";
-import { colliderLabPreferences } from "../../../preferences/ColliderLabPreferencesModel.js";
 import {
   ECAL_INNER,
   ECAL_OUTER,
@@ -26,7 +25,7 @@ import {
 import type { RadialScale } from "./radialScale.js";
 
 export class DetectorChromeLayer extends Node {
-  public redraw(scale: RadialScale, zoomed: boolean): void {
+  public redraw(showDetectorLabels: boolean, scale: RadialScale, zoomed: boolean): void {
     // Node.dispose() leaves children alone; disposeSubtree() frees the dropped nodes, whose
     // Colors-property fills would otherwise keep them alive.
     for (const child of this.children) {
@@ -72,7 +71,7 @@ export class DetectorChromeLayer extends Node {
           centerX: 0,
           centerY: -scale(r),
         });
-      if (colliderLabPreferences.showDetectorLabelsProperty.value) {
+      if (showDetectorLabels) {
         children.push(
           label(strings.ecalStringProperty, (ECAL_INNER + ECAL_OUTER) / 2),
           label(strings.hcalStringProperty, (HCAL_INNER + HCAL_OUTER) / 2),

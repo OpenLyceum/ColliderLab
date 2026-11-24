@@ -5,12 +5,11 @@
  * Simulation. Each preference Property takes its initial value from the
  * corresponding query parameter in colliderLabQueryParameters.
  *
- * A single instance is shared by main.ts (the Preferences dialog) and the
- * screen views that read it.
+ * main.ts shares one instance with the dialog and screens.
  */
 
 import { BooleanProperty } from "scenerystack/axon";
-import { Tandem } from "scenerystack/tandem";
+import type { Tandem } from "scenerystack/tandem";
 import ColliderLabNamespace from "../ColliderLabNamespace.js";
 import colliderLabQueryParameters from "./colliderLabQueryParameters.js";
 
@@ -29,8 +28,5 @@ export class ColliderLabPreferencesModel {
     this.showDetectorLabelsProperty.reset();
   }
 }
-
-/** The sim-wide preferences. */
-export const colliderLabPreferences = new ColliderLabPreferencesModel(Tandem.ROOT.createTandem("preferences"));
 
 ColliderLabNamespace.register("ColliderLabPreferencesModel", ColliderLabPreferencesModel);

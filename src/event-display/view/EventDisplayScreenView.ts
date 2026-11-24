@@ -23,6 +23,7 @@ import {
 } from "../../common/ColliderLabControlOptions.js";
 import { ColliderLabPanel } from "../../common/ColliderLabPanel.js";
 import { StringManager } from "../../i18n/StringManager.js";
+import type { ColliderLabPreferencesModel } from "../../preferences/ColliderLabPreferencesModel.js";
 import { B_FIELD_RANGE, type EventDisplayModel } from "../model/EventDisplayModel.js";
 import { PROCESSES } from "../model/EventGenerator.js";
 import { DetectorNode } from "./DetectorNode.js";
@@ -38,7 +39,11 @@ export type EventDisplayScreenViewOptions = ScreenViewOptions;
 export class EventDisplayScreenView extends ScreenView {
   private readonly zoomProperty = new BooleanProperty(false);
 
-  public constructor(model: EventDisplayModel, providedOptions?: EventDisplayScreenViewOptions) {
+  public constructor(
+    model: EventDisplayModel,
+    preferences: ColliderLabPreferencesModel,
+    providedOptions?: EventDisplayScreenViewOptions,
+  ) {
     const options = optionize<EventDisplayScreenViewOptions, EmptySelfOptions, ScreenViewOptions>()(
       { screenSummaryContent: new EventDisplayScreenSummaryContent(model) },
       providedOptions,
@@ -53,7 +58,12 @@ export class EventDisplayScreenView extends ScreenView {
         maxWidth: EVENT_DISPLAY_LAYOUT.LABEL_MAX_WIDTH,
       });
 
-    const detector = new DetectorNode(model, this.zoomProperty, DETECTOR_PIXELS);
+    const detector = new DetectorNode(
+      model,
+      this.zoomProperty,
+      DETECTOR_PIXELS,
+      preferences.showDetectorLabelsProperty,
+    );
     detector.x = this.layoutBounds.minX + SCREEN_VIEW_MARGIN + DETECTOR_PIXELS;
     detector.y = this.layoutBounds.centerY;
 

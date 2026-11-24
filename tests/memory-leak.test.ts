@@ -22,10 +22,11 @@ const eventDisplay = new EventDisplayModel();
 eventDisplay.showTruthProperty.value = true;
 eventDisplay.selectTrack(0);
 const energyFrontier = new EnergyFrontierModel();
+const showDetectorLabelsProperty = new BooleanProperty(true);
 const zoomProperty = new BooleanProperty(false);
 
 describeDisposalLeaks([
   { name: "MassSpectrumChartNode", create: () => new MassSpectrumChartNode(bumpHunt, 400, 300) },
-  { name: "DetectorNode", create: () => new DetectorNode(eventDisplay, zoomProperty, 200) },
+  { name: "DetectorNode", create: () => new DetectorNode(eventDisplay, zoomProperty, 200, showDetectorLabelsProperty) },
   { name: "SqrtSChartNode", create: () => new SqrtSChartNode(energyFrontier, 400, 300) },
 ]);
