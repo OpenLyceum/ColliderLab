@@ -143,7 +143,10 @@ export class BumpHuntModel implements TModel {
     if (this.cursor >= this.order.length) {
       return null;
     }
-    const index = this.order[this.cursor] ?? 0;
+    const index = this.order[this.cursor];
+    if (index === undefined) {
+      throw new RangeError(`Missing event at shuffled position ${this.cursor}`);
+    }
     this.cursor += 1;
     return index;
   }
