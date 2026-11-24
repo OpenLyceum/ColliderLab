@@ -84,6 +84,10 @@ export class EventDisplayModel implements TModel {
         if (!track) {
           return null;
         }
+        const particle = event.particles[track.particleId];
+        if (particle?.id !== track.particleId) {
+          throw new Error(`No particle for detector track ${track.particleId}`);
+        }
         const fit = fitCircle(track.hits);
         const sagitta = sagittaOf(track.hits);
         return {
@@ -91,7 +95,7 @@ export class EventDisplayModel implements TModel {
           fitPt: fit ? ptFromRadius(fit.radius, bField) : null,
           sagitta,
           sagittaPt: sagitta && Number.isFinite(sagitta.radius) ? ptFromRadius(sagitta.radius, bField) : null,
-          truePt: event.particles[track.particleId]?.pt ?? 0,
+          truePt: particle.pt,
         };
       },
     );
